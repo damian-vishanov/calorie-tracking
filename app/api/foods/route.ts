@@ -3,7 +3,7 @@ import joi from "joi";
 import { foodsRepo } from "@/app/_helpers/server/foods-repo";
 import { apiHandler } from "@/app/_helpers/server/api";
 
-async function getByUserId(userId: string, dateFrom: string, dateTo: string) {
+async function getByUserId(userId: string, dateFrom?: string, dateTo?: string) {
   return await foodsRepo.getByUserId({ userId, dateFrom, dateTo });
 }
 

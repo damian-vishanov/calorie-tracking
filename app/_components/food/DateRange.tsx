@@ -6,7 +6,8 @@ import { Button, Grid, Paper, Typography } from "@mui/material";
 import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs, { Dayjs } from "dayjs";
-import { IFoodService, IUserService } from "@/app/_services";
+import { IFoodService, IUserService, useAlertService } from "@/app/_services";
+import { usePathname } from "next/navigation";
 
 type Props = {
   foodService: IFoodService;
@@ -20,24 +21,42 @@ type FormData = {
 };
 
 export function DateRange({ foodService, userService, setIsLoading }: Props) {
+  const pathname = usePathname();
+  const alertService = useAlertService();
   const { control, handleSubmit } = useForm<FormData>({
-    defaultValues: {
-      dateFrom: dayjs(),
-      dateTo: dayjs(),
-    },
+    // defaultValues: {
+    //   dateFrom: dayjs(),
+    //   dateTo: dayjs(),
+    // },
   });
 
   const onSubmit = async (data: FormData) => {
-    // if (userService.currentUser?.id && data.dateFrom && data.dateTo) {
-    const dateFrom = dayjs(data.dateFrom).format("ddd, D MMM YYYY");
+    alertService.clear();
+    if (!data.dateFrom || !data.dateTo) {
+      alertService.error("Please select start and end dates");
+      return;
+    }
+
+    if (data.dateFrom > data.dateTo) {
+      alertService.error("Start date must be earlier than end date");
+      return;
+    }
+
     setIsLoading(true);
-    await foodService.getByUserId(
-      userService.currentUser.id,
-      dayjs(data.dateFrom).format("ddd, D MMM YYYY"),
-      dayjs(data.dateTo).add(1, "day").format("ddd, D MMM YYYY")
-    );
+
+    if (pathname === "/admin/food-items") {
+      await foodService.getAll(
+        data.dateFrom ? data.dateFrom.format("ddd, D MMM YYYY") : null,
+        data.dateTo ? data.dateTo.add(1, "day").format("ddd, D MMM YYYY") : null
+      );
+    } else {
+      await foodService.getByUserId(
+        userService.currentUser.id,
+        data.dateFrom ? data.dateFrom.format("ddd, D MMM YYYY") : null,
+        data.dateTo ? data.dateTo.add(1, "day").format("ddd, D MMM YYYY") : null
+      );
+    }
   };
-  // };
 
   return (
     <Grid item xs={12}>
@@ -67,6 +86,7 @@ export function DateRange({ foodService, userService, setIsLoading }: Props) {
                 label="From"
                 format="DD/MM/YYYY"
                 value={field.value}
+                disableFuture
                 onChange={field.onChange}
                 sx={{ mb: 2 }}
               />
@@ -80,29 +100,13 @@ export function DateRange({ foodService, userService, setIsLoading }: Props) {
                 label="To"
                 format="DD/MM/YYYY"
                 value={field.value}
+                disableFuture
                 onChange={field.onChange}
                 sx={{ mb: 4 }}
               />
             )}
           />
         </LocalizationProvider>
-        {/* <LocalizationProvider
-          dateAdapter={AdapterDayjs}
-          adapterLocale={"en-gb"}
-        >
-          <Controller
-            name="dateTo"
-            control={control}
-            render={({ field }) => (
-              <DatePicker
-                label="To"
-                value={field.value}
-                onChange={field.onChange}
-                sx={{ mb: 4 }}
-              />
-            )}
-          />
-        </LocalizationProvider> */}
         <Button variant="contained" onClick={handleSubmit(onSubmit)}>
           Apply
         </Button>

@@ -28,8 +28,12 @@ import {
 } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
-// Define the form data type
+type Props = {
+  isAdmin: Boolean;
+};
+
 type FormData = {
+  userId: string;
   date: Dayjs | null;
   time: Dayjs | null;
   name: string;
@@ -37,7 +41,7 @@ type FormData = {
   cheating: boolean; // Add a new boolean field for Cheat Day
 };
 
-export function AddFood() {
+export function AddFood({ isAdmin }: Props) {
   const router = useRouter();
   const alertService = useAlertService();
   const foodService = useFoodService();

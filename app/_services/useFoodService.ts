@@ -11,21 +11,23 @@ export function useFoodService(): IFoodService {
     foods,
     daysReachedLimit,
     getAll: async (dateFrom, dateTo) => {
-      let foods;
+      let path = "/api/admin/food-items";
+
       if (dateFrom && dateTo) {
-        foods = await fetch.get(
-          `/api/admin/food-items?&dateFrom=${dateFrom}&dateTo=${dateTo}`
-        );
-      } else {
-        foods = await fetch.get(`/api/admin/food-items`);
+        path = `/api/admin/food-items?&dateFrom=${dateFrom}&dateTo=${dateTo}`;
       }
 
+      const foods = await fetch.get(path);
       setFoods(foods);
     },
     getByUserId: async (userId, dateFrom, dateTo) => {
-      const foods = await fetch.get(
-        `/api/foods?userId=${userId}&dateFrom=${dateFrom}&dateTo=${dateTo}`
-      );
+      let path = `/api/foods?userId=${userId}`;
+
+      if (dateFrom && dateTo) {
+        path = `/api/foods?userId=${userId}&dateFrom=${dateFrom}&dateTo=${dateTo}`;
+      }
+
+      const foods = await fetch.get(path);
       setFoods(foods);
     },
     getUserReachedLimitDays: async (userId, caloriesLimit) => {
@@ -62,8 +64,8 @@ export interface IFoodService extends IFoodStore, IDaysReachedLimitStore {
   getAll: (dateFrom?: string, dateTo?: string) => Promise<void>;
   getByUserId: (
     userId: string,
-    dateFrom: string,
-    dateTo: string
+    dateFrom?: string,
+    dateTo?: string
   ) => Promise<void>;
   getUserReachedLimitDays: (
     userId: string,

@@ -1,7 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
-
 import {
   Table,
   TableBody,
@@ -13,30 +11,28 @@ import {
   Paper,
   Link,
 } from "@mui/material";
-import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
-import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 
 import { useFoodService, useUserService } from "@/app/_services";
-import { Spinner } from "../Spinner";
+import { Spinner } from "@/app/_components/Spinner";
 import dayjs from "dayjs";
-import { DateRange } from "./DateRange";
-import ReachedDays from "./ReachedDays";
 
-export function FoodEntries() {
+import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
+import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
+import { DateRange } from "@/app/_components/food/DateRange";
+import { useEffect, useState } from "react";
+
+export default function AdminFoodEntries() {
   const foodService = useFoodService();
   const userService = useUserService();
-
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  // const [dateFrom, setDateFrom] = useState<Dayjs | null>(null);
-  // const [dateTo, setDateTo] = useState<Dayjs | null>(null);
+
   const foodItems = foodService.foods;
 
   useEffect(() => {
     if (userService.currentUser?.id) {
-      foodService.getByUserId(
-        userService.currentUser?.id
-        // dayjs(new Date()).format("ddd, D MMM YYYY"),
-        // dayjs(new Date()).add(1, "day").format("ddd, D MMM YYYY")
+      foodService.getAll(
+        dayjs(new Date()).format("ddd, D MMM YYYY"),
+        dayjs(new Date()).add(1, "day").format("ddd, D MMM YYYY")
       );
     }
   }, [userService.currentUser]);
@@ -64,6 +60,7 @@ export function FoodEntries() {
             <Table size="small">
               <TableHead>
                 <TableRow>
+                  <TableCell>User</TableCell>
                   <TableCell>Date taken</TableCell>
                   <TableCell>Product Name</TableCell>
                   <TableCell>Calorie value</TableCell>
@@ -73,6 +70,7 @@ export function FoodEntries() {
               <TableBody>
                 {foodItems.map((row) => (
                   <TableRow key={row.id}>
+                    <TableCell>{row.user?.email}</TableCell>
                     <TableCell>
                       {dayjs(row.takenAt).format("DD MMM, YYYY - HH:mm")}
                     </TableCell>
@@ -108,7 +106,6 @@ export function FoodEntries() {
             userService={userService}
             setIsLoading={setIsLoading}
           />
-          <ReachedDays foodService={foodService} userService={userService} />
           <Grid item xs={12}>
             <Paper
               sx={{

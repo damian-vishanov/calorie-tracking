@@ -18,13 +18,22 @@ async function getAll(params: any) {
 }
 
 async function getByUserId(params: any) {
-  return await Food.find({
-    userId: params.userId,
-    takenAt: {
-      $gte: params.dateFrom,
-      $lte: params.dateTo,
-    },
-  }).sort({ takenAt: -1 });
+  let filter = {};
+  if (params.dateFrom && params.dateTo) {
+    filter = {
+      userId: params.userId,
+      takenAt: {
+        $gte: params.dateFrom,
+        $lte: params.dateTo,
+      },
+    };
+  } else {
+    filter = {
+      userId: params.userId,
+    };
+  }
+
+  return await Food.find(filter).sort({ takenAt: -1 });
 }
 
 async function getUserReachedLimitDays(params: any) {
