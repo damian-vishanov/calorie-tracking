@@ -57,5 +57,12 @@ function foodModel() {
     },
   });
 
+  schema.virtual("user", {
+    ref: "User",
+    localField: "userId",
+    foreignField: "_id",
+    justOne: true,
+  });
+
   return mongoose.models.Food || mongoose.model("Food", schema);
 }

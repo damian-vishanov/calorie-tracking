@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useFetch } from "@/app/_helpers/client";
+import { IUser } from "../_store/slices/userSlice";
 
 export function useFoodService(): IFoodService {
   const fetch = useFetch();
@@ -9,8 +10,16 @@ export function useFoodService(): IFoodService {
   return {
     foods,
     daysReachedLimit,
-    getAll: async () => {
-      const foods = await fetch.get(`/api/foods`);
+    getAll: async (dateFrom, dateTo) => {
+      let foods;
+      if (dateFrom && dateTo) {
+        foods = await fetch.get(
+          `/api/admin/food-items?&dateFrom=${dateFrom}&dateTo=${dateTo}`
+        );
+      } else {
+        foods = await fetch.get(`/api/admin/food-items`);
+      }
+
       setFoods(foods);
     },
     getByUserId: async (userId, dateFrom, dateTo) => {
@@ -38,6 +47,7 @@ export interface IFoodItem {
   calorieValue: string;
   cheating: boolean;
   userId: string;
+  user?: IUser;
 }
 
 interface IFoodStore {
@@ -49,7 +59,7 @@ interface IDaysReachedLimitStore {
 }
 
 export interface IFoodService extends IFoodStore, IDaysReachedLimitStore {
-  getAll: () => Promise<void>;
+  getAll: (dateFrom?: string, dateTo?: string) => Promise<void>;
   getByUserId: (
     userId: string,
     dateFrom: string,

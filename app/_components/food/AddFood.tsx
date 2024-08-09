@@ -66,6 +66,11 @@ export function AddFood() {
         `${data.date?.format("YYYY-MM-DD")} ${data.time?.format("HH:mm")}`
       ).toDate();
 
+      if (dateTime > new Date()) {
+        alertService.error("Date and time cannot be set in the future");
+        return;
+      }
+
       const formattedData = {
         id: null,
         name: data.name,
@@ -104,6 +109,7 @@ export function AddFood() {
                       label="Select Date"
                       format="DD/MM/YYYY"
                       value={field.value}
+                      disableFuture
                       onChange={(newValue) => field.onChange(newValue)}
                       slotProps={{
                         textField: {
@@ -126,6 +132,7 @@ export function AddFood() {
                         label="Select Time"
                         value={field.value}
                         ampm={false}
+                        disableFuture
                         onChange={(newValue) => field.onChange(newValue)}
                         slotProps={{
                           textField: {

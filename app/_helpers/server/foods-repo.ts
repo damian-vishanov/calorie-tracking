@@ -3,8 +3,18 @@ const mongoose = require("mongoose");
 
 const Food = db.Food;
 
-async function getAll() {
-  return await Food.find();
+async function getAll(params: any) {
+  let filter = {};
+  if (params.dateFrom && params.dateTo) {
+    filter = {
+      takenAt: {
+        $gte: params.dateFrom,
+        $lte: params.dateTo,
+      },
+    };
+  }
+
+  return await Food.find(filter).populate("user").sort({ takenAt: -1 });
 }
 
 async function getByUserId(params: any) {
