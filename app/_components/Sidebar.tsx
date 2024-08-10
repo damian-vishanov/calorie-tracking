@@ -139,6 +139,16 @@ export default function Sidebar({
                 </Link>
               </List>
               <List component="div" disablePadding>
+                <Link href="/admin/add-food" passHref>
+                  <ListItemButton sx={{ pl: 4 }}>
+                    <ListItemIcon>
+                      <AddIcon />
+                    </ListItemIcon>
+                    <ListItemText primary="Add user food" />
+                  </ListItemButton>
+                </Link>
+              </List>
+              <List component="div" disablePadding>
                 <Link href="/admin/reports" passHref>
                   <ListItemButton sx={{ pl: 4 }}>
                     <ListItemIcon>

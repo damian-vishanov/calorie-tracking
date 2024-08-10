@@ -11,9 +11,9 @@ export default function Home() {
   return (
     <>
       <Grid item xs={12} sx={{ display: "flex" }} mb={2}>
-        <Link href="/add-food">
+        <Link href="/admin/add-food">
           <Button variant="contained" startIcon={<AddIcon />}>
-            Add food
+            Add user food
           </Button>
         </Link>
       </Grid>

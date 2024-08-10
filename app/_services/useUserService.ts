@@ -4,18 +4,21 @@ import { useAlertService } from "./useAlertService";
 import { useFetch } from "../_helpers/client";
 import { selectCurrentUser } from "../_store/selectors";
 import { IUser, setCurrentUser } from "../_store/slices/userSlice";
+import { useState } from "react";
 
 export function useUserService(): IUserService {
   const alertService = useAlertService();
   const fetch = useFetch();
   const router = useRouter();
   const searchParams = useSearchParams();
+  const [users, setUsers] = useState<IUser[]>([]);
 
   const dispatch = useDispatch();
   const currentUser = useSelector(selectCurrentUser);
 
   return {
     currentUser,
+    users,
     login: async (email, password) => {
       alertService.clear();
       try {
@@ -36,9 +39,10 @@ export function useUserService(): IUserService {
       await fetch.post("/api/account/logout");
       router.push("/account/login");
     },
-    // getAll: async () => {
-    //     userStore.setState({ users: await fetch.get('/api/users') });
-    // },
+    getAll: async () => {
+      const getUsers = await fetch.get("/api/admin/users");
+      setUsers(getUsers);
+    },
     // getById: async (id) => {
     //     userStore.setState({ user: undefined });
     //     try {
@@ -90,13 +94,14 @@ export function useUserService(): IUserService {
 // interfaces
 
 interface IUserStore {
+  users?: IUser[];
   currentUser?: IUser;
 }
 
 export interface IUserService extends IUserStore {
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
-  // getAll: () => Promise<void>,
+  getAll: () => Promise<void>;
   // getById: (id: string) => Promise<void>,
   getCurrent: () => Promise<void>;
   // create: (user: IUser) => Promise<void>,

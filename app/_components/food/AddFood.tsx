@@ -18,8 +18,12 @@ import {
   TextField,
   Typography,
   CircularProgress,
-  Switch, // Import MUI Switch
-  FormControlLabel, // Import FormControlLabel for labeling the switch
+  Switch,
+  FormControlLabel,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
 } from "@mui/material";
 import {
   DatePicker,
@@ -27,6 +31,9 @@ import {
   LocalizationProvider,
 } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { useEffect, useState } from "react";
+
+import { Spinner } from "../Spinner";
 
 type Props = {
   isAdmin: Boolean;
@@ -38,7 +45,7 @@ type FormData = {
   time: Dayjs | null;
   name: string;
   calorieValue: string;
-  cheating: boolean; // Add a new boolean field for Cheat Day
+  cheating: boolean;
 };
 
 export function AddFood({ isAdmin }: Props) {
@@ -46,11 +53,15 @@ export function AddFood({ isAdmin }: Props) {
   const alertService = useAlertService();
   const foodService = useFoodService();
   const userService = useUserService();
+  const [loading, setLoading] = useState(true);
+  const users = userService.users;
 
   const {
     register,
     handleSubmit,
     control,
+    setValue,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<FormData>({
     mode: "onBlur",
@@ -60,8 +71,41 @@ export function AddFood({ isAdmin }: Props) {
       name: "",
       calorieValue: "",
       cheating: false,
+      userId: "",
     },
   });
+
+  const userId = watch("userId");
+
+  useEffect(() => {
+    async function loadData() {
+      setLoading(true);
+
+      if (isAdmin) {
+        const allUsers = await userService.getAll();
+      }
+
+      if (userService.currentUser?.id) {
+        setValue("userId", userService.currentUser?.id);
+      }
+
+      setLoading(false);
+    }
+
+    loadData();
+  }, [isAdmin, setValue, userService.currentUser]);
+
+  // useEffect(() => {
+  //   if (isAdmin) {
+  //     userService.getAll();
+  //   }
+  // }, [isAdmin]);
+
+  // useEffect(() => {
+  //   if (userService.currentUser?.id) {
+  //     setValue("userId", userService.currentUser?.id.toString());
+  //   }
+  // }, [userService.currentUser]);
 
   async function onSubmit(data: FormData) {
     alertService.clear();
@@ -80,7 +124,7 @@ export function AddFood({ isAdmin }: Props) {
         name: data.name,
         calorieValue: data.calorieValue,
         takenAt: dateTime,
-        userId: userService.currentUser?.id,
+        userId: isAdmin ? data.userId : userService.currentUser?.id,
         cheating: data.cheating,
       };
 
@@ -93,6 +137,10 @@ export function AddFood({ isAdmin }: Props) {
     }
   }
 
+  if (loading) {
+    return <Spinner />;
+  }
+
   return (
     <Grid container justifyContent="center" style={{ marginTop: "20px" }}>
       <Grid item xs={12} sm={8} md={6}>
@@ -101,6 +149,37 @@ export function AddFood({ isAdmin }: Props) {
             Add New Food
           </Typography>
           <form onSubmit={handleSubmit(onSubmit)}>
+            {isAdmin && (
+              <Box sx={{ mb: 3, mt: 3 }}>
+                <FormControl fullWidth error={!!errors.userId}>
+                  <InputLabel id="category-select-label">User</InputLabel>
+                  <Controller
+                    name="userId"
+                    control={control}
+                    rules={{ required: "User is required" }}
+                    render={({ field }) => (
+                      <Select
+                        labelId="userId"
+                        label="User"
+                        {...field}
+                        onChange={(event) => field.onChange(event.target.value)}
+                      >
+                        {users?.map((el) => (
+                          <MenuItem key={el.id} value={el.id}>
+                            {el.role}: {el.email}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    )}
+                  />
+                  {errors.userId && (
+                    <Typography color="error" variant="body2">
+                      {errors.userId.message}
+                    </Typography>
+                  )}
+                </FormControl>
+              </Box>
+            )}
             <Box sx={{ mb: 3, mt: 3 }}>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <Controller

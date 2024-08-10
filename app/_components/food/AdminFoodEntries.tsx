@@ -30,10 +30,7 @@ export default function AdminFoodEntries() {
 
   useEffect(() => {
     if (userService.currentUser?.id) {
-      foodService.getAll(
-        dayjs(new Date()).format("ddd, D MMM YYYY"),
-        dayjs(new Date()).add(1, "day").format("ddd, D MMM YYYY")
-      );
+      foodService.getAll();
     }
   }, [userService.currentUser]);
 
@@ -106,58 +103,6 @@ export default function AdminFoodEntries() {
             userService={userService}
             setIsLoading={setIsLoading}
           />
-          <Grid item xs={12}>
-            <Paper
-              sx={{
-                p: 2,
-                display: "flex",
-                flexDirection: "column",
-                height: 130,
-              }}
-            >
-              <Typography
-                component="h2"
-                variant="h6"
-                color="primary"
-                gutterBottom
-              >
-                Taken calories
-              </Typography>
-              <Typography component="p" variant="h4">
-                {foodItems
-                  .map((el) => !el.cheating && parseInt(el.calorieValue))
-                  .reduce((acc, el) => acc + el, 0)}
-              </Typography>
-            </Paper>
-          </Grid>
-          <Grid item xs={12}>
-            <Paper
-              sx={{
-                p: 2,
-                display: "flex",
-                flexDirection: "column",
-                height: 210,
-              }}
-            >
-              <Typography
-                component="h2"
-                variant="h6"
-                color="primary"
-                gutterBottom
-              >
-                Calorie daily limit
-              </Typography>
-              <Typography component="p" variant="h4">
-                {userService.currentUser?.caloriesLimit}
-              </Typography>
-              <Typography color="text.secondary" sx={{ flex: 1 }}>
-                Updated on 15 March, 2019
-              </Typography>
-              <div>
-                <Link color="primary">Change limit</Link>
-              </div>
-            </Paper>
-          </Grid>
         </Grid>
       </Grid>
     </Grid>
