@@ -17,6 +17,10 @@ function errorHandler(err: Error | string) {
         return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
     }
 
+    if (err.message === 'InsufficientPrivilegesError') {
+        return NextResponse.json({ message: 'Insufficient privileges to complete the operation' }, { status: 403 });
+    }
+
     // default to 500 server error
     console.error(err);
     return NextResponse.json({ message: err.message }, { status: 500 });

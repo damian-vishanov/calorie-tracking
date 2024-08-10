@@ -9,7 +9,9 @@ export async function jwtMiddleware(req: NextRequest, options?: IOptions) {
   const id = auth.verifyToken();
   if (options?.admin) {
     const currentUser = await usersRepo.getById(id);
-    if (currentUser.role !== "Admin") return;
+    if (currentUser.role !== "Admin") {
+      throw new Error('InsufficientPrivilegesError');
+    }
   }
 
   req.headers.set("userId", id);
