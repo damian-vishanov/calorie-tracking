@@ -20,5 +20,5 @@ function Edit({ params: { id } }: any) {
     foodService.getById(id);
   }, [router]);
 
-  return food ? <AddEditFood isAdmin={true} food={food} /> : <Spinner />;
+  return <AddEditFood isAdmin={true} food={food} />;
 }

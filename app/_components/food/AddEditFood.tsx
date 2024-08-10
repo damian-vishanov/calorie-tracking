@@ -97,11 +97,9 @@ export function AddEditFood({ isAdmin, food }: Props) {
     loadData();
   }, [isAdmin, setValue, userService.currentUser]);
 
-  // useEffect(() => {
-  //   if (isAdmin) {
-  //     userService.getAll();
-  //   }
-  // }, [isAdmin]);
+  useEffect(() => {
+    console.log("food: ", food);
+  });
 
   // useEffect(() => {
   //   if (userService.currentUser?.id) {

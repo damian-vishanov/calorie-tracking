@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+
 import {
   Table,
   TableBody,
@@ -9,7 +11,6 @@ import {
   Typography,
   Grid,
   Paper,
-  Link,
   Dialog,
   DialogActions,
   DialogContent,
@@ -122,11 +123,13 @@ export default function AdminFoodEntries() {
                     </TableCell>
                     <TableCell>
                       <Box sx={{ display: "flex" }}>
-                        <Tooltip title="Edit">
-                          <IconButton color="secondary" aria-label="edit">
-                            <EditIcon />
-                          </IconButton>
-                        </Tooltip>
+                        <Link href={`/admin/food/edit?id=${row.id}`}>
+                          <Tooltip title="Edit">
+                            <IconButton color="secondary" aria-label="edit">
+                              <EditIcon />
+                            </IconButton>
+                          </Tooltip>
+                        </Link>
                         <Tooltip title="Delete">
                           <IconButton
                             color="error"
