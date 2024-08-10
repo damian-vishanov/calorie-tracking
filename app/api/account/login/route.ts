@@ -4,10 +4,6 @@ import joi from "joi";
 import { usersRepo } from "@/app/_helpers/server/users-repo";
 import { apiHandler } from "@/app/_helpers/server/api";
 
-module.exports = apiHandler({
-  POST: login,
-});
-
 async function login(req: Request) {
   const body = await req.json();
   const { user, token } = await usersRepo.authenticate(body);
@@ -17,7 +13,9 @@ async function login(req: Request) {
   return user;
 }
 
-login.schema = joi.object({
+const schema = joi.object({
   email: joi.string().required().email(),
   password: joi.string().required(),
 });
+
+export const POST = apiHandler(login, { schema, public: true });

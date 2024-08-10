@@ -3,10 +3,6 @@ import joi from "joi";
 import { usersRepo } from "@/app/_helpers/server/users-repo";
 import { apiHandler } from "@/app/_helpers/server/api";
 
-async function getAll() {
-  return await usersRepo.getAll();
-}
-
 // async function create(req: Request) {
 //   const body = await req.json();
 //   await foodsRepo.create(body);
@@ -20,9 +16,6 @@ async function getAll() {
 //   userId: joi.string().required(),
 // });
 
-module.exports = apiHandler({
-  GET: async (req) => {
-    return getAll();
-  },
-  // POST: create,
-});
+export const GET = apiHandler(async () => {
+  return await usersRepo.getAll();
+}, { admin: true });
