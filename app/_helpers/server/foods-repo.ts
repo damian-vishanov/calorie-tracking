@@ -108,6 +108,11 @@ async function create(params: any) {
   await food.save();
 }
 
+async function update(id: string, params: any) {
+  const user = await Food.findById(id);
+  await user.save();
+}
+
 async function _delete(id: string) {
   await Food.findByIdAndDelete(id);
 }
@@ -118,5 +123,6 @@ export const foodsRepo = {
   getByUserId,
   getUserReachedLimitDays,
   create,
+  update,
   delete: _delete,
 };

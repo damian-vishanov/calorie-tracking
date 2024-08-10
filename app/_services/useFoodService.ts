@@ -26,7 +26,7 @@ export function useFoodService(): IFoodService {
     },
     getById: async (id) => {
       try {
-        const food = await fetch.get(`/api/food-items?id=${id}`);
+        const food = await fetch.get(`/api/admin/food-items?id=${id}`);
         setFood(food);
       } catch (error: any) {
         alertService.error(error);
@@ -50,6 +50,9 @@ export function useFoodService(): IFoodService {
     },
     create: async (food) => {
       await fetch.post("/api/foods", food);
+    },
+    update: async (id, params) => {
+      await fetch.put(`/api/admin/food-items/${id}`, params);
     },
     delete: async (id) => {
       await fetch.delete(`/api/admin/food-items`, id);
@@ -89,5 +92,6 @@ export interface IFoodService extends IFoodStore, IDaysReachedLimitStore {
     caloriesLimit: number
   ) => Promise<void>;
   create: (user: IFoodItem) => Promise<void>;
+  update: (id: string, params: IFoodItem) => Promise<void>;
   delete: (id: string) => Promise<void>;
 }

@@ -38,7 +38,7 @@ import { Spinner } from "../Spinner";
 
 type Props = {
   isAdmin: Boolean;
-  food: IFoodItem;
+  foodToEdit: IFoodItem;
 };
 
 type FormData = {
@@ -50,7 +50,7 @@ type FormData = {
   cheating: boolean;
 };
 
-export function AddEditFood({ isAdmin, food }: Props) {
+export function AddEditFood({ isAdmin, foodToEdit }: Props) {
   const router = useRouter();
   const alertService = useAlertService();
   const foodService = useFoodService();
@@ -63,6 +63,7 @@ export function AddEditFood({ isAdmin, food }: Props) {
     handleSubmit,
     control,
     setValue,
+    reset,
     watch,
     formState: { errors, isSubmitting },
   } = useForm<FormData>({
@@ -77,14 +78,12 @@ export function AddEditFood({ isAdmin, food }: Props) {
     },
   });
 
-  const userId = watch("userId");
-
   useEffect(() => {
     async function loadData() {
       setLoading(true);
 
       if (isAdmin) {
-        const allUsers = await userService.getAll();
+        await userService.getAll();
       }
 
       if (userService.currentUser?.id) {
@@ -98,14 +97,18 @@ export function AddEditFood({ isAdmin, food }: Props) {
   }, [isAdmin, setValue, userService.currentUser]);
 
   useEffect(() => {
-    console.log("food: ", food);
-  });
-
-  // useEffect(() => {
-  //   if (userService.currentUser?.id) {
-  //     setValue("userId", userService.currentUser?.id.toString());
-  //   }
-  // }, [userService.currentUser]);
+    if (foodToEdit) {
+      const data = {
+        date: dayjs(foodToEdit.takenAt),
+        time: dayjs(foodToEdit.takenAt),
+        name: foodToEdit.name,
+        calorieValue: foodToEdit.calorieValue.toString(),
+        cheating: foodToEdit.cheating,
+        userId: foodToEdit.userId,
+      };
+      reset(data);
+    }
+  }, [foodToEdit]);
 
   async function onSubmit(data: FormData) {
     alertService.clear();
@@ -120,7 +123,7 @@ export function AddEditFood({ isAdmin, food }: Props) {
       }
 
       const formattedData = {
-        id: null,
+        id: foodToEdit ? foodToEdit.id : null,
         name: data.name,
         calorieValue: data.calorieValue,
         takenAt: dateTime,
@@ -128,9 +131,18 @@ export function AddEditFood({ isAdmin, food }: Props) {
         cheating: data.cheating,
       };
 
-      await foodService.create(formattedData);
+      if (foodToEdit) {
+        await foodService.update(foodToEdit.id, formattedData);
+      } else {
+        await foodService.create(formattedData);
+      }
 
-      router.push("/");
+      if (foodToEdit || isAdmin) {
+        router.push("/admin/food");
+      } else {
+        router.push("/");
+      }
+
       alertService.success("Food added", true);
     } catch (error: any) {
       alertService.error(error);
@@ -289,7 +301,12 @@ export function AddEditFood({ isAdmin, food }: Props) {
               )}
             </Box>
             <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 2 }}>
-              <Button component={Link} href="/" variant="text" color="inherit">
+              <Button
+                component={Link}
+                href="/admin/food"
+                variant="text"
+                color="inherit"
+              >
                 Cancel
               </Button>
               <Button

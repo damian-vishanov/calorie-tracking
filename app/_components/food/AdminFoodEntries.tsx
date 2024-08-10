@@ -123,7 +123,7 @@ export default function AdminFoodEntries() {
                     </TableCell>
                     <TableCell>
                       <Box sx={{ display: "flex" }}>
-                        <Link href={`/admin/food/edit?id=${row.id}`}>
+                        <Link href={`/admin/food/edit/${row.id}`}>
                           <Tooltip title="Edit">
                             <IconButton color="secondary" aria-label="edit">
                               <EditIcon />

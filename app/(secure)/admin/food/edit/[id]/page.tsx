@@ -14,11 +14,18 @@ function Edit({ params: { id } }: any) {
   const foodService = useFoodService();
   const food = foodService.food;
 
-  useEffect(() => {
-    if (!id) return;
+  if (!id) {
+    router.push("/");
+    return;
+  }
 
-    foodService.getById(id);
+  useEffect(() => {
+    const loadData = async () => {
+      await foodService.getById(id);
+    };
+
+    loadData();
   }, [router]);
 
-  return <AddEditFood isAdmin={true} food={food} />;
+  return <AddEditFood isAdmin={true} foodToEdit={food} />;
 }
