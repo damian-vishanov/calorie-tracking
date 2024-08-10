@@ -1,2 +1,2 @@
 export * from "./FoodEntries";
-export * from "./AddFood";
+export * from "./AddEditFood";

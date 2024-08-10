@@ -17,6 +17,14 @@ async function getAll(params: any) {
   return await Food.find(filter).populate("user").sort({ takenAt: -1 });
 }
 
+async function getById(params: any) {
+  try {
+    return await Food.findById(params);
+  } catch {
+    throw "Food Not Found";
+  }
+}
+
 async function getByUserId(params: any) {
   let filter = {};
   if (params.dateFrom && params.dateTo) {
@@ -100,9 +108,15 @@ async function create(params: any) {
   await food.save();
 }
 
+async function _delete(id: string) {
+  await Food.findByIdAndDelete(id);
+}
+
 export const foodsRepo = {
   getAll,
+  getById,
   getByUserId,
   getUserReachedLimitDays,
   create,
+  delete: _delete,
 };

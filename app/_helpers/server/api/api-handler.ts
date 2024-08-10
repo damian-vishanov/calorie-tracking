@@ -5,7 +5,6 @@ import { errorHandler, jwtMiddleware, validateMiddleware } from "./";
 export function apiHandler(handler: any) {
   const wrappedHandler: any = {};
   const httpMethods = ["GET", "POST", "PUT", "PATCH", "DELETE"];
-
   // wrap handler methods to add middleware and global error handler
   httpMethods.forEach((method) => {
     if (typeof handler[method] !== "function") return;

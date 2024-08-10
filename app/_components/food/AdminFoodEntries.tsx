@@ -10,12 +10,26 @@ import {
   Grid,
   Paper,
   Link,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Button,
+  Box,
 } from "@mui/material";
 
-import { useFoodService, useUserService } from "@/app/_services";
+import {
+  useFoodService,
+  useUserService,
+  useAlertService,
+} from "@/app/_services";
 import { Spinner } from "@/app/_components/Spinner";
 import dayjs from "dayjs";
 
+import { IconButton, Tooltip } from "@mui/material";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import { DateRange } from "@/app/_components/food/DateRange";
@@ -24,7 +38,10 @@ import { useEffect, useState } from "react";
 export default function AdminFoodEntries() {
   const foodService = useFoodService();
   const userService = useUserService();
+  const alertService = useAlertService();
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [openDialog, setOpenDialog] = useState<boolean>(false);
+  const [selectedFoodId, setSelectedFoodId] = useState<string | null>(null);
 
   const foodItems = foodService.foods;
 
@@ -37,6 +54,24 @@ export default function AdminFoodEntries() {
   useEffect(() => {
     setIsLoading(false);
   }, [foodService]);
+
+  const handleDeleteClick = (foodId: string) => {
+    setSelectedFoodId(foodId);
+    setOpenDialog(true);
+  };
+
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+    setSelectedFoodId(null);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (selectedFoodId) {
+      await foodService.delete(selectedFoodId);
+      foodService.getAll();
+    }
+    setOpenDialog(false);
+  };
 
   return (
     <Grid container spacing={3}>
@@ -62,6 +97,7 @@ export default function AdminFoodEntries() {
                   <TableCell>Product Name</TableCell>
                   <TableCell>Calorie value</TableCell>
                   <TableCell>Cheating</TableCell>
+                  <TableCell>Actions</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -84,6 +120,24 @@ export default function AdminFoodEntries() {
                         </>
                       )}
                     </TableCell>
+                    <TableCell>
+                      <Box sx={{ display: "flex" }}>
+                        <Tooltip title="Edit">
+                          <IconButton color="secondary" aria-label="edit">
+                            <EditIcon />
+                          </IconButton>
+                        </Tooltip>
+                        <Tooltip title="Delete">
+                          <IconButton
+                            color="error"
+                            aria-label="delete"
+                            onClick={() => handleDeleteClick(row.id)}
+                          >
+                            <DeleteIcon />
+                          </IconButton>
+                        </Tooltip>
+                      </Box>
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -105,6 +159,31 @@ export default function AdminFoodEntries() {
           />
         </Grid>
       </Grid>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog
+        open={openDialog}
+        onClose={handleCloseDialog}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {"Are you sure you want to delete this item?"}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Deleting this item cannot be undone.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDialog} color="primary">
+            No
+          </Button>
+          <Button onClick={handleConfirmDelete} color="error" autoFocus>
+            Yes
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Grid>
   );
 }

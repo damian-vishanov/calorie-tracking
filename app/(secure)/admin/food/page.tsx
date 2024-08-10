@@ -2,22 +2,22 @@
 
 import Link from "next/link";
 
-import { Grid, Button } from "@mui/material";
+import { Grid, Paper, Button } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 
-import { FoodEntries } from "../_components/food";
+import AdminFoodEntries from "@/app/_components/food/AdminFoodEntries";
 
 export default function Home() {
   return (
     <>
       <Grid item xs={12} sx={{ display: "flex" }} mb={2}>
-        <Link href="/food/add">
+        <Link href="/admin/add-food">
           <Button variant="contained" startIcon={<AddIcon />}>
-            Add food
+            Add user food
           </Button>
         </Link>
       </Grid>
-      <FoodEntries />
+      <AdminFoodEntries />
     </>
   );
 }

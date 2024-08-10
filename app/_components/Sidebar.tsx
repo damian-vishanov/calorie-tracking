@@ -106,7 +106,7 @@ export default function Sidebar({
             </Link>
           </List>
           <List component="div" disablePadding>
-            <Link href="/add-food" passHref>
+            <Link href="/food/add" passHref>
               <ListItemButton sx={{ pl: 4 }}>
                 <ListItemIcon>
                   <AddIcon />
@@ -129,7 +129,7 @@ export default function Sidebar({
             </ListItemButton>
             <Collapse in={adminMenuOpen} timeout="auto" unmountOnExit>
               <List component="div" disablePadding>
-                <Link href="/admin/food-items" passHref>
+                <Link href="/admin/food" passHref>
                   <ListItemButton sx={{ pl: 4 }}>
                     <ListItemIcon>
                       <ManageSearchIcon />
@@ -139,7 +139,7 @@ export default function Sidebar({
                 </Link>
               </List>
               <List component="div" disablePadding>
-                <Link href="/admin/add-food" passHref>
+                <Link href="/admin/food/add" passHref>
                   <ListItemButton sx={{ pl: 4 }}>
                     <ListItemIcon>
                       <AddIcon />

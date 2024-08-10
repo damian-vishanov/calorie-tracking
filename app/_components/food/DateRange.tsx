@@ -23,12 +23,22 @@ type FormData = {
 export function DateRange({ foodService, userService, setIsLoading }: Props) {
   const pathname = usePathname();
   const alertService = useAlertService();
-  const { control, handleSubmit } = useForm<FormData>({
-    // defaultValues: {
-    //   dateFrom: dayjs(),
-    //   dateTo: dayjs(),
-    // },
-  });
+  const { control, handleSubmit, setValue } = useForm<FormData>();
+
+  const loadData = async (dateFrom?: Dayjs, dayTo?: Dayjs) => {
+    if (pathname === "/admin/food-items") {
+      await foodService.getAll(
+        dateFrom ? dateFrom.format("ddd, D MMM YYYY") : null,
+        dayTo ? dayTo.add(1, "day").format("ddd, D MMM YYYY") : null
+      );
+    } else {
+      await foodService.getByUserId(
+        userService.currentUser.id,
+        dateFrom ? dateFrom.format("ddd, D MMM YYYY") : null,
+        dayTo ? dayTo.add(1, "day").format("ddd, D MMM YYYY") : null
+      );
+    }
+  };
 
   const onSubmit = async (data: FormData) => {
     alertService.clear();
@@ -44,18 +54,13 @@ export function DateRange({ foodService, userService, setIsLoading }: Props) {
 
     setIsLoading(true);
 
-    if (pathname === "/admin/food-items") {
-      await foodService.getAll(
-        data.dateFrom ? data.dateFrom.format("ddd, D MMM YYYY") : null,
-        data.dateTo ? data.dateTo.add(1, "day").format("ddd, D MMM YYYY") : null
-      );
-    } else {
-      await foodService.getByUserId(
-        userService.currentUser.id,
-        data.dateFrom ? data.dateFrom.format("ddd, D MMM YYYY") : null,
-        data.dateTo ? data.dateTo.add(1, "day").format("ddd, D MMM YYYY") : null
-      );
-    }
+    await loadData(data.dateFrom, data.dateTo);
+  };
+
+  const handleResetDates = async () => {
+    await loadData();
+    setValue("dateFrom", null);
+    setValue("dateTo", null);
   };
 
   return (
@@ -107,8 +112,15 @@ export function DateRange({ foodService, userService, setIsLoading }: Props) {
             )}
           />
         </LocalizationProvider>
-        <Button variant="contained" onClick={handleSubmit(onSubmit)}>
+        <Button
+          sx={{ mb: 2 }}
+          variant="contained"
+          onClick={handleSubmit(onSubmit)}
+        >
           Apply
+        </Button>
+        <Button sx={{ mb: 2 }} variant="outlined" onClick={handleResetDates}>
+          Reset dates
         </Button>
       </Paper>
     </Grid>

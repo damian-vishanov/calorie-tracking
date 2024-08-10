@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useForm, Controller } from "react-hook-form";
 import {
+  IFoodItem,
   useAlertService,
   useFoodService,
   useUserService,
@@ -37,6 +38,7 @@ import { Spinner } from "../Spinner";
 
 type Props = {
   isAdmin: Boolean;
+  food: IFoodItem;
 };
 
 type FormData = {
@@ -48,7 +50,7 @@ type FormData = {
   cheating: boolean;
 };
 
-export function AddFood({ isAdmin }: Props) {
+export function AddEditFood({ isAdmin, food }: Props) {
   const router = useRouter();
   const alertService = useAlertService();
   const foodService = useFoodService();

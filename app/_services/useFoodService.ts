@@ -1,14 +1,18 @@
 import { useState } from "react";
 import { useFetch } from "@/app/_helpers/client";
 import { IUser } from "../_store/slices/userSlice";
+import { useAlertService } from "./useAlertService";
 
 export function useFoodService(): IFoodService {
+  const alertService = useAlertService();
   const fetch = useFetch();
   const [foods, setFoods] = useState<IFoodItem[]>([]);
+  const [food, setFood] = useState<IFoodItem | null>(null);
   const [daysReachedLimit, setDaysReachedLimit] = useState<Date[]>([]);
 
   return {
     foods,
+    food,
     daysReachedLimit,
     getAll: async (dateFrom, dateTo) => {
       let path = "/api/admin/food-items";
@@ -19,6 +23,14 @@ export function useFoodService(): IFoodService {
 
       const foods = await fetch.get(path);
       setFoods(foods);
+    },
+    getById: async (id) => {
+      try {
+        const food = await fetch.get(`/api/food-items?id=${id}`);
+        setFood(food);
+      } catch (error: any) {
+        alertService.error(error);
+      }
     },
     getByUserId: async (userId, dateFrom, dateTo) => {
       let path = `/api/foods?userId=${userId}`;
@@ -39,6 +51,9 @@ export function useFoodService(): IFoodService {
     create: async (food) => {
       await fetch.post("/api/foods", food);
     },
+    delete: async (id) => {
+      await fetch.delete(`/api/admin/food-items`, id);
+    },
   };
 }
 
@@ -54,6 +69,7 @@ export interface IFoodItem {
 
 interface IFoodStore {
   foods?: IFoodItem[];
+  food?: IFoodItem;
 }
 
 interface IDaysReachedLimitStore {
@@ -62,6 +78,7 @@ interface IDaysReachedLimitStore {
 
 export interface IFoodService extends IFoodStore, IDaysReachedLimitStore {
   getAll: (dateFrom?: string, dateTo?: string) => Promise<void>;
+  getById: (id: string) => Promise<void>;
   getByUserId: (
     userId: string,
     dateFrom?: string,
@@ -72,4 +89,5 @@ export interface IFoodService extends IFoodStore, IDaysReachedLimitStore {
     caloriesLimit: number
   ) => Promise<void>;
   create: (user: IFoodItem) => Promise<void>;
+  delete: (id: string) => Promise<void>;
 }
