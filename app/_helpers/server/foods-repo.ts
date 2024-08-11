@@ -29,7 +29,7 @@ async function getByUserId(params: any) {
   let filter = {};
   if (params.dateFrom && params.dateTo) {
     filter = {
-      userId: params.userId,
+      userId: new mongoose.Types.ObjectId(params.userId),
       takenAt: {
         $gte: params.dateFrom,
         $lte: params.dateTo,
@@ -42,6 +42,26 @@ async function getByUserId(params: any) {
   }
 
   return await Food.find(filter).sort({ takenAt: -1 });
+}
+
+async function getUserAverageCalories(params: any) {
+  console.log(params);
+  const filter = {
+    userId: new mongoose.Types.ObjectId(params.userId),
+    takenAt: {
+      $gte: new Date(params.dateFrom),
+      $lte: new Date(params.dateTo),
+    },
+    cheating: false,
+  };
+
+  const result = await Food.aggregate([
+    { $match: filter },
+    { $group: { _id: null, averageCalories: { $avg: "$calorieValue" } } },
+    { $project: { _id: 0, averageCalories: 1 } },
+  ]);
+
+  return result.length > 0 ? result[0].averageCalories : 0;
 }
 
 async function getUserReachedLimitDays(params: any) {
@@ -120,6 +140,7 @@ export const foodsRepo = {
   getAll,
   getById,
   getByUserId,
+  getUserAverageCalories,
   getUserReachedLimitDays,
   create,
   update,

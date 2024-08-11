@@ -26,7 +26,7 @@ export function DateRange({ foodService, userService, setIsLoading }: Props) {
   const { control, handleSubmit, setValue } = useForm<FormData>();
 
   const loadData = async (dateFrom?: Dayjs, dayTo?: Dayjs) => {
-    if (pathname === "/admin/food-items") {
+    if (pathname === "/admin/food") {
       await foodService.getAll(
         dateFrom ? dateFrom.format("ddd, D MMM YYYY") : null,
         dayTo ? dayTo.add(1, "day").format("ddd, D MMM YYYY") : null
