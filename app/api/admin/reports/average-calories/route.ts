@@ -1,19 +1,5 @@
 import { foodsRepo, usersRepo } from "@/app/_helpers/server";
 import { apiHandler } from "@/app/_helpers/server/api";
-import { isError } from "joi";
-
-async function getAverageCalories2(
-  userId: string,
-  dateFrom: string,
-  dateTo: string
-) {
-  const result = [];
-  const users = await usersRepo.getAll();
-
-  await foodsRepo.getUserAverageCalories({ userId, dateFrom, dateTo });
-
-  return result;
-}
 
 async function getAverageCalories(dateFrom?: string, dateTo?: string) {
   const users = await usersRepo.getAll();

@@ -49,6 +49,8 @@ export default function AdminReports() {
       dayjs().add(-6, "day").format("ddd, D MMM YYYY"),
       dayjs().add(1, "day").format("ddd, D MMM YYYY")
     );
+
+    reportService.getFoodItemsCount();
   }, []);
 
   return (
@@ -66,7 +68,7 @@ export default function AdminReports() {
             Number of added entries
           </Typography>
           <ResponsiveContainer width="100%" height={400}>
-            <LineChart data={data}>
+            <LineChart data={reportService.foodItemsCount}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="day" />
               <YAxis />
@@ -90,7 +92,6 @@ export default function AdminReports() {
           </ResponsiveContainer>
         </Paper>
       </Grid>
-
       <Grid item xs={5}>
         <Paper
           sx={{

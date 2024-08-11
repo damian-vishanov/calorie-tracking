@@ -1,22 +1,27 @@
 import { useState } from "react";
 import { useFetch } from "@/app/_helpers/client";
-import { IUser } from "../_store/slices/userSlice";
 import { useAlertService } from "./useAlertService";
 
 export function useReportService(): IReportService {
   const alertService = useAlertService();
   const fetch = useFetch();
   const [usersCalories, setUsersCalories] = useState<IUserItem[]>([]);
-  const [daysReachedLimit, setDaysReachedLimit] = useState<Date[]>([]);
+  const [foodItemsCount, setFoodItemsCount] = useState<IFoodItemCount[]>([]);
 
   return {
     usersCalories,
-    daysReachedLimit,
+    foodItemsCount,
     getUsersCalories: async (dateFrom, dateTo) => {
       const getUsersCalories = await fetch.get(
         `/api/admin/reports/average-calories?dateFrom=${dateFrom}&dateTo=${dateTo}`
       );
       setUsersCalories(getUsersCalories);
+    },
+    getFoodItemsCount: async () => {
+      const getFoodItemsCount = await fetch.get(
+        `/api/admin/reports/food-items-count`
+      );
+      setFoodItemsCount(getFoodItemsCount);
     },
   };
 }
@@ -31,10 +36,17 @@ interface IUserStore {
   usersCalories?: IUserItem[];
 }
 
-interface IDaysReachedLimitStore {
-  daysReachedLimit?: Date[];
+interface IFoodItemCount {
+  day: string;
+  currentWeek: number;
+  previousWeek: number;
 }
 
-export interface IReportService extends IUserStore, IDaysReachedLimitStore {
+interface IFoodsCountStore {
+  foodItemsCount?: IFoodItemCount[];
+}
+
+export interface IReportService extends IUserStore, IFoodsCountStore {
   getUsersCalories: (dateFrom?: string, dateTo?: string) => Promise<void>;
+  getFoodItemsCount: () => Promise<void>;
 }
