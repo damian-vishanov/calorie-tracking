@@ -1,7 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
-
 import {
   Table,
   TableBody,
@@ -15,35 +13,18 @@ import {
 } from "@mui/material";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
-
 import { useFoodService, useUserService } from "@/app/_services";
 import { Spinner } from "../Spinner";
-import dayjs from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 import { DateRange } from "./DateRange";
 import ReachedDays from "./ReachedDays";
+import { useFoodEntriesForm } from "./useFoodEntriesForm";
 
 export function FoodEntries() {
   const foodService = useFoodService();
   const userService = useUserService();
-
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  // const [dateFrom, setDateFrom] = useState<Dayjs | null>(null);
-  // const [dateTo, setDateTo] = useState<Dayjs | null>(null);
-  const foodItems = foodService.foods;
-
-  useEffect(() => {
-    if (userService.currentUser?.id) {
-      foodService.getByUserId(
-        userService.currentUser?.id
-        // dayjs(new Date()).format("ddd, D MMM YYYY"),
-        // dayjs(new Date()).add(1, "day").format("ddd, D MMM YYYY")
-      );
-    }
-  }, [userService.currentUser]);
-
-  useEffect(() => {
-    setIsLoading(false);
-  }, [foodService]);
+  const foodEntriesForm = useFoodEntriesForm({ userService, foodService });
+  const { isLoading, foodItems } = foodEntriesForm;
 
   return (
     <Grid container spacing={3}>
@@ -103,12 +84,12 @@ export function FoodEntries() {
 
       <Grid item xs={12} md={6} lg={4}>
         <Grid container spacing={3}>
-          <DateRange
+          <DateRange foodEntriesForm={foodEntriesForm} />
+          <ReachedDays
             foodService={foodService}
             userService={userService}
-            setIsLoading={setIsLoading}
+            foodEntriesForm={foodEntriesForm}
           />
-          <ReachedDays foodService={foodService} userService={userService} />
           <Grid item xs={12}>
             <Paper
               sx={{

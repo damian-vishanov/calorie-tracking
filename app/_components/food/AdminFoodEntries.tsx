@@ -34,27 +34,17 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import { DateRange } from "@/app/_components/food/DateRange";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useFoodEntriesForm } from "./useFoodEntriesForm";
 
 export default function AdminFoodEntries() {
   const foodService = useFoodService();
   const userService = useUserService();
-  const alertService = useAlertService();
-  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [openDialog, setOpenDialog] = useState<boolean>(false);
   const [selectedFoodId, setSelectedFoodId] = useState<string | null>(null);
 
-  const foodItems = foodService.foods;
-
-  useEffect(() => {
-    if (userService.currentUser?.id) {
-      foodService.getAll();
-    }
-  }, [userService.currentUser]);
-
-  useEffect(() => {
-    setIsLoading(false);
-  }, [foodService]);
+  const foodEntriesForm = useFoodEntriesForm({ userService, foodService, isAdminForm: true });
+  const { isLoading, foodItems } = foodEntriesForm;
 
   const handleDeleteClick = (foodId: string) => {
     setSelectedFoodId(foodId);
@@ -155,11 +145,7 @@ export default function AdminFoodEntries() {
 
       <Grid item xs={12} md={6} lg={4}>
         <Grid container spacing={3}>
-          <DateRange
-            foodService={foodService}
-            userService={userService}
-            setIsLoading={setIsLoading}
-          />
+        <DateRange foodEntriesForm={foodEntriesForm} />
         </Grid>
       </Grid>
 

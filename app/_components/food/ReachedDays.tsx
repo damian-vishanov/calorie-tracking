@@ -6,13 +6,17 @@ import { LocalizationProvider, DateCalendar } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
 import { IFoodService, IUserService } from "@/app/_services";
+import { IFoodEntriesForm } from "./commonTypes";
 
 type Props = {
   foodService: IFoodService;
   userService: IUserService;
+  foodEntriesForm: IFoodEntriesForm;
 };
 
-export default function ReachedDays({ foodService, userService }: Props) {
+export default function ReachedDays({ foodService, userService, foodEntriesForm }: Props) {
+  const { formMethods, onSubmit } = foodEntriesForm;
+  const { setValue, handleSubmit } = formMethods;
   const isDayHighlighted = (day: Dayjs) => {
     if (foodService.daysReachedLimit?.length) {
       return foodService.daysReachedLimit.some((highlightedDay) =>
@@ -41,10 +45,15 @@ export default function ReachedDays({ foodService, userService }: Props) {
         </Typography>
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <DateCalendar
-            // value={dayjs()}
+            value={null}
             views={["day"]}
-            readOnly
             sx={{ width: "100%" }}
+            disableFuture
+            onChange={(newValue) => {
+              setValue("dateFrom", newValue);
+              setValue("dateTo", newValue);
+              handleSubmit(onSubmit)();
+            }}
             slotProps={{
               day: (day) => {
                 const isSelected = isDayHighlighted(day.day);

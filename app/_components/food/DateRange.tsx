@@ -1,67 +1,18 @@
 "use client";
 
-import { Dispatch, SetStateAction } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, UseFormReturn } from "react-hook-form";
 import { Button, Grid, Paper, Typography } from "@mui/material";
 import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import dayjs, { Dayjs } from "dayjs";
-import { IFoodService, IUserService, useAlertService } from "@/app/_services";
-import { usePathname } from "next/navigation";
+import { TFormData, IFoodEntriesForm } from "./commonTypes";
 
 type Props = {
-  foodService: IFoodService;
-  userService: IUserService;
-  setIsLoading: Dispatch<SetStateAction<boolean>>;
+  foodEntriesForm: IFoodEntriesForm;
 };
 
-type FormData = {
-  dateFrom: Dayjs | null;
-  dateTo: Dayjs | null;
-};
-
-export function DateRange({ foodService, userService, setIsLoading }: Props) {
-  const pathname = usePathname();
-  const alertService = useAlertService();
-  const { control, handleSubmit, setValue } = useForm<FormData>();
-
-  const loadData = async (dateFrom?: Dayjs, dayTo?: Dayjs) => {
-    if (pathname === "/admin/food") {
-      await foodService.getAll(
-        dateFrom ? dateFrom.format("ddd, D MMM YYYY") : null,
-        dayTo ? dayTo.add(1, "day").format("ddd, D MMM YYYY") : null
-      );
-    } else {
-      await foodService.getByUserId(
-        userService.currentUser.id,
-        dateFrom ? dateFrom.format("ddd, D MMM YYYY") : null,
-        dayTo ? dayTo.add(1, "day").format("ddd, D MMM YYYY") : null
-      );
-    }
-  };
-
-  const onSubmit = async (data: FormData) => {
-    alertService.clear();
-    if (!data.dateFrom || !data.dateTo) {
-      alertService.error("Please select start and end dates");
-      return;
-    }
-
-    if (data.dateFrom > data.dateTo) {
-      alertService.error("Start date must be earlier than end date");
-      return;
-    }
-
-    setIsLoading(true);
-
-    await loadData(data.dateFrom, data.dateTo);
-  };
-
-  const handleResetDates = async () => {
-    await loadData();
-    setValue("dateFrom", null);
-    setValue("dateTo", null);
-  };
+export function DateRange({ foodEntriesForm }: Props) {
+  const { formMethods, loadData, onSubmit, handleReset } = foodEntriesForm;
+  const { control, handleSubmit, setValue } = formMethods;
 
   return (
     <Grid item xs={12}>
@@ -119,7 +70,7 @@ export function DateRange({ foodService, userService, setIsLoading }: Props) {
         >
           Apply
         </Button>
-        <Button sx={{ mb: 2 }} variant="outlined" onClick={handleResetDates}>
+        <Button sx={{ mb: 2 }} variant="outlined" onClick={handleReset}>
           Reset dates
         </Button>
       </Paper>
