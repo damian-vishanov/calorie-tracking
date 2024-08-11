@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   LineChart,
   Line,
@@ -16,6 +16,7 @@ import {
   TableCell,
   TableHead,
   TableRow,
+  TablePagination,
   Typography,
   Grid,
   Paper,
@@ -44,18 +45,34 @@ export default function AdminReports() {
   const reportService = useReportService();
   const usersCalories = reportService.usersCalories;
 
+  const [page, setPage] = useState<number>(0);
+  const [rowsPerPage, setRowsPerPage] = useState<number>(5);
+
   useEffect(() => {
     reportService.getUsersCalories(
       dayjs().add(-6, "day").format("ddd, D MMM YYYY"),
-      dayjs().add(1, "day").format("ddd, D MMM YYYY")
+      dayjs().add(1, "day").format("ddd, D MMM YYYY"),
+      page + 1,
+      rowsPerPage
     );
 
     reportService.getFoodItemsCount();
-  }, []);
+  }, [page, rowsPerPage]);
+
+  const handleChangePage = (event: unknown, newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0); // Reset to first page
+  };
 
   return (
     <Grid container spacing={3}>
-      <Grid item xs={7}>
+      <Grid item xs={12} lg={6}>
         <Paper
           sx={{
             p: 2,
@@ -71,7 +88,9 @@ export default function AdminReports() {
             <LineChart data={reportService.foodItemsCount}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="day" />
-              <YAxis />
+              <YAxis
+                tickFormatter={(tick) => (Number.isInteger(tick) ? tick : "")}
+              />
               <Tooltip />
               <Legend />
               <Line
@@ -92,7 +111,7 @@ export default function AdminReports() {
           </ResponsiveContainer>
         </Paper>
       </Grid>
-      <Grid item xs={5}>
+      <Grid item xs={12} lg={6}>
         <Paper
           sx={{
             p: 2,
@@ -104,22 +123,35 @@ export default function AdminReports() {
           <Typography component="h2" variant="h6" color="primary" gutterBottom>
             Average calories for last 7 days
           </Typography>
-          <Table size="small">
-            <TableHead>
-              <TableRow>
-                <TableCell>User</TableCell>
-                <TableCell>Avеrage calories</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {usersCalories.map((row) => (
-                <TableRow key={row.id}>
-                  <TableCell>{row.email}</TableCell>
-                  <TableCell>{parseInt(row.averageCalories)}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+          {usersCalories?.totalCount > 0 && (
+            <>
+              <Table size="small">
+                <TableHead>
+                  <TableRow>
+                    <TableCell>User</TableCell>
+                    <TableCell>Avеrage calories</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {usersCalories?.users.map((row) => (
+                    <TableRow key={row.id}>
+                      <TableCell>{row.email}</TableCell>
+                      <TableCell>{row.averageCalories}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+              <TablePagination
+                component="div"
+                count={usersCalories?.totalCount}
+                page={page}
+                onPageChange={handleChangePage}
+                rowsPerPage={rowsPerPage}
+                onRowsPerPageChange={handleChangeRowsPerPage}
+                rowsPerPageOptions={[5]}
+              />
+            </>
+          )}
         </Paper>
       </Grid>
     </Grid>

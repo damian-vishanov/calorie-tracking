@@ -6,7 +6,7 @@ import { useAlertService } from "./useAlertService";
 export function useFoodService(): IFoodService {
   const alertService = useAlertService();
   const fetch = useFetch();
-  const [foods, setFoods] = useState<IFoodItem[]>([]);
+  const [foods, setFoods] = useState<IFoodItems>(null);
   const [food, setFood] = useState<IFoodItem | null>(null);
   const [daysReachedLimit, setDaysReachedLimit] = useState<Date[]>([]);
 
@@ -14,11 +14,15 @@ export function useFoodService(): IFoodService {
     foods,
     food,
     daysReachedLimit,
-    getAll: async (dateFrom, dateTo) => {
-      let path = "/api/admin/food-items";
+    getAll: async (dateFrom, dateTo, page, pageSize) => {
+      let path = `/api/admin/food-items${page && `?page=${page}`}${
+        pageSize && `&pageSize=${pageSize}`
+      }`;
 
       if (dateFrom && dateTo) {
-        path = `/api/admin/food-items?&dateFrom=${dateFrom}&dateTo=${dateTo}`;
+        path = `/api/admin/food-items?&dateFrom=${dateFrom}&dateTo=${dateTo}${
+          page && `&page=${page}`
+        }${pageSize && `&pageSize=${pageSize}`}`;
       }
 
       const foods = await fetch.get(path);
@@ -32,11 +36,13 @@ export function useFoodService(): IFoodService {
         alertService.error(error);
       }
     },
-    getByUserId: async (userId, dateFrom, dateTo) => {
-      let path = `/api/foods?userId=${userId}`;
+    getByUserId: async (userId, dateFrom, dateTo, page, pageSize) => {
+      let path = `/api/foods?userId=${userId}${page && `&page=${page}`}${
+        pageSize && `&pageSize=${pageSize}`
+      }`;
 
       if (dateFrom && dateTo) {
-        path = `/api/foods?userId=${userId}&dateFrom=${dateFrom}&dateTo=${dateTo}`;
+        path += `&dateFrom=${dateFrom}&dateTo=${dateTo}`;
       }
 
       const foods = await fetch.get(path);
@@ -70,8 +76,15 @@ export interface IFoodItem {
   user?: IUser;
 }
 
+interface IFoodItems {
+  items: IFoodItem[];
+  totalItems: number;
+  page: number;
+  pageSize: number;
+}
+
 interface IFoodStore {
-  foods?: IFoodItem[];
+  foods?: IFoodItems;
   food?: IFoodItem;
 }
 
@@ -80,12 +93,19 @@ interface IDaysReachedLimitStore {
 }
 
 export interface IFoodService extends IFoodStore, IDaysReachedLimitStore {
-  getAll: (dateFrom?: string, dateTo?: string) => Promise<void>;
+  getAll: (
+    dateFrom?: string,
+    dateTo?: string,
+    page?: number,
+    pageSize?: number
+  ) => Promise<void>;
   getById: (id: string) => Promise<void>;
   getByUserId: (
     userId: string,
     dateFrom?: string,
-    dateTo?: string
+    dateTo?: string,
+    page?: number,
+    pageSize?: number
   ) => Promise<void>;
   getUserReachedLimitDays: (
     userId: string,

@@ -4,17 +4,38 @@ const mongoose = require("mongoose");
 const Food = db.Food;
 
 async function getAll(params: any) {
-  let filter = {};
+  let filter: any = {};
+
+  // Filter based on date range if provided
   if (params.dateFrom && params.dateTo) {
-    filter = {
-      takenAt: {
-        $gte: params.dateFrom,
-        $lte: params.dateTo,
-      },
+    filter.takenAt = {
+      $gte: new Date(params.dateFrom),
+      $lte: new Date(params.dateTo),
     };
   }
 
-  return await Food.find(filter).populate("user").sort({ takenAt: -1 });
+  const page = params.page ? parseInt(params.page, 10) : 1;
+  const pageSize = params.pageSize ? parseInt(params.pageSize, 10) : 10;
+
+  // Calculate the number of documents to skip
+  const skip = (page - 1) * pageSize;
+
+  // Fetch the total count of documents matching the filter
+  const totalItems = await Food.countDocuments(filter);
+
+  // Fetch the documents with pagination
+  const items = await Food.find(filter)
+    .populate("user")
+    .sort({ takenAt: -1 })
+    .skip(skip)
+    .limit(pageSize);
+
+  return {
+    items,
+    totalItems,
+    page,
+    pageSize,
+  };
 }
 
 async function getById(params: any) {
@@ -41,26 +62,106 @@ async function getByUserId(params: any) {
     };
   }
 
-  return await Food.find(filter).sort({ takenAt: -1 });
+  const page = params.page ? parseInt(params.page, 10) : 1;
+  const pageSize = params.pageSize ? parseInt(params.pageSize, 10) : 10;
+
+  // Calculate the number of documents to skip
+  const skip = (page - 1) * pageSize;
+
+  // Fetch the total count of documents matching the filter
+  const totalItems = await Food.countDocuments(filter);
+
+  const items = await Food.find(filter)
+    .sort({ takenAt: -1 })
+    .skip(skip)
+    .limit(pageSize);
+
+  return {
+    items,
+    totalItems,
+    page,
+    pageSize,
+  };
 }
 
+// async function getUserAverageCalories(params: any) {
+//   const filter = {
+//     userId: new mongoose.Types.ObjectId(params.userId),
+//     takenAt: {
+//       $gte: new Date(params.dateFrom),
+//       $lte: new Date(params.dateTo),
+//     },
+//     cheating: false,
+//   };
+
+//   const result = await Food.aggregate([
+//     { $match: filter },
+//     { $group: { _id: null, averageCalories: { $avg: "$calorieValue" } } },
+//     { $project: { _id: 0, averageCalories: 1 } },
+//   ]);
+
+//   return result.length > 0 ? result[0].averageCalories : 0;
+// }
+
 async function getUserAverageCalories(params: any) {
-  const filter = {
-    userId: new mongoose.Types.ObjectId(params.userId),
-    takenAt: {
-      $gte: new Date(params.dateFrom),
-      $lte: new Date(params.dateTo),
-    },
-    cheating: false,
-  };
+  const dateFrom = new Date(params.dateFrom);
+  const dateTo = new Date(params.dateTo);
+  const page = params.page || 1;
+  const pageSize = params.pageSize || 10;
+  const skip = (page - 1) * pageSize;
 
   const result = await Food.aggregate([
-    { $match: filter },
-    { $group: { _id: null, averageCalories: { $avg: "$calorieValue" } } },
-    { $project: { _id: 0, averageCalories: 1 } },
+    {
+      $match: {
+        takenAt: {
+          $gte: dateFrom,
+          $lte: dateTo,
+        },
+        cheating: false,
+      },
+    },
+    {
+      $lookup: {
+        from: "users", // Assuming the 'User' collection is named 'users'
+        localField: "userId",
+        foreignField: "_id",
+        as: "user",
+      },
+    },
+    {
+      $unwind: "$user",
+    },
+    {
+      $group: {
+        _id: "$user._id",
+        email: { $first: "$user.email" },
+        averageCalories: { $avg: "$calorieValue" },
+      },
+    },
+    {
+      $sort: { email: 1 }, // Sort by email or another field if needed
+    },
+    {
+      $facet: {
+        data: [{ $skip: skip }, { $limit: pageSize }],
+        totalCount: [{ $count: "count" }],
+      },
+    },
+    {
+      $project: {
+        data: 1,
+        totalCount: { $arrayElemAt: ["$totalCount.count", 0] },
+      },
+    },
   ]);
 
-  return result.length > 0 ? result[0].averageCalories : 0;
+  const totalCount = result[0].totalCount || 0;
+  const usersWithAverageCalories = result[0].data;
+
+  return {
+    users: usersWithAverageCalories,
+    totalCount,
+  };
 }
 
 async function getFoodItemsCount() {
@@ -85,19 +186,71 @@ async function getFoodItemsCount() {
     return date.toISOString().split("T")[0];
   }
 
+  // Function to match date only (strips the time part)
+  function matchDateOnly(field, date) {
+    return {
+      $eq: [
+        {
+          $dateToString: {
+            format: "%Y-%m-%d",
+            date: {
+              $dateFromParts: {
+                year: {
+                  $year: { date: `$${field}`, timezone: serverTimezone },
+                },
+                month: {
+                  $month: { date: `$${field}`, timezone: serverTimezone },
+                },
+                day: {
+                  $dayOfMonth: { date: `$${field}`, timezone: serverTimezone },
+                },
+              },
+            },
+            timezone: serverTimezone,
+          },
+        },
+        date,
+      ],
+    };
+  }
+
   // Query 1: Get food item counts for the current week
   const currentWeekCounts = await Food.aggregate([
     {
       $match: {
-        takenAt: {
-          $gte: currentWeekStart,
-          $lte: currentWeekEnd,
+        $expr: {
+          $and: [
+            {
+              $gte: [
+                {
+                  $dateToString: {
+                    format: "%Y-%m-%d",
+                    date: "$takenAt",
+                    timezone: serverTimezone,
+                  },
+                },
+                formatDateOnly(currentWeekStart),
+              ],
+            },
+            {
+              $lte: [
+                {
+                  $dateToString: {
+                    format: "%Y-%m-%d",
+                    date: "$takenAt",
+                    timezone: serverTimezone,
+                  },
+                },
+                formatDateOnly(currentWeekEnd),
+              ],
+            },
+          ],
         },
       },
     },
     {
-      $addFields: {
-        dateOnly: {
+      $group: {
+        _id: {
           $dateToString: {
             format: "%Y-%m-%d",
             date: {
@@ -114,11 +267,6 @@ async function getFoodItemsCount() {
             timezone: serverTimezone,
           },
         },
-      },
-    },
-    {
-      $group: {
-        _id: "$dateOnly",
         count: { $sum: 1 },
       },
     },
@@ -131,15 +279,39 @@ async function getFoodItemsCount() {
   const previousWeekCounts = await Food.aggregate([
     {
       $match: {
-        takenAt: {
-          $gte: previousWeekStart,
-          $lte: previousWeekEnd,
+        $expr: {
+          $and: [
+            {
+              $gte: [
+                {
+                  $dateToString: {
+                    format: "%Y-%m-%d",
+                    date: "$takenAt",
+                    timezone: serverTimezone,
+                  },
+                },
+                formatDateOnly(previousWeekStart),
+              ],
+            },
+            {
+              $lte: [
+                {
+                  $dateToString: {
+                    format: "%Y-%m-%d",
+                    date: "$takenAt",
+                    timezone: serverTimezone,
+                  },
+                },
+                formatDateOnly(previousWeekEnd),
+              ],
+            },
+          ],
         },
       },
     },
     {
-      $addFields: {
-        dateOnly: {
+      $group: {
+        _id: {
           $dateToString: {
             format: "%Y-%m-%d",
             date: {
@@ -156,11 +328,6 @@ async function getFoodItemsCount() {
             timezone: serverTimezone,
           },
         },
-      },
-    },
-    {
-      $group: {
-        _id: "$dateOnly",
         count: { $sum: 1 },
       },
     },

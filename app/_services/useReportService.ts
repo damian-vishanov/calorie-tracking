@@ -5,16 +5,19 @@ import { useAlertService } from "./useAlertService";
 export function useReportService(): IReportService {
   const alertService = useAlertService();
   const fetch = useFetch();
-  const [usersCalories, setUsersCalories] = useState<IUserItem[]>([]);
+  const [usersCalories, setUsersCalories] = useState<IUsersItems>(null);
   const [foodItemsCount, setFoodItemsCount] = useState<IFoodItemCount[]>([]);
 
   return {
     usersCalories,
     foodItemsCount,
-    getUsersCalories: async (dateFrom, dateTo) => {
+    getUsersCalories: async (dateFrom, dateTo, page, pageSize) => {
       const getUsersCalories = await fetch.get(
-        `/api/admin/reports/average-calories?dateFrom=${dateFrom}&dateTo=${dateTo}`
+        `/api/admin/reports/average-calories?dateFrom=${dateFrom}&dateTo=${dateTo}&page=${[
+          page,
+        ]}&pageSize=${pageSize}`
       );
+      console.log("getUsersCalories: ", getUsersCalories);
       setUsersCalories(getUsersCalories);
     },
     getFoodItemsCount: async () => {
@@ -26,14 +29,19 @@ export function useReportService(): IReportService {
   };
 }
 
-export interface IUserItem {
-  id: string | null;
+interface IUserItem {
+  id: string;
   email: string;
-  averageCalories: string;
+  averageCalories: number;
+}
+
+export interface IUsersItems {
+  users: IUserItem[];
+  totalCount: number;
 }
 
 interface IUserStore {
-  usersCalories?: IUserItem[];
+  usersCalories?: IUsersItems;
 }
 
 interface IFoodItemCount {
@@ -47,6 +55,11 @@ interface IFoodsCountStore {
 }
 
 export interface IReportService extends IUserStore, IFoodsCountStore {
-  getUsersCalories: (dateFrom?: string, dateTo?: string) => Promise<void>;
+  getUsersCalories: (
+    dateFrom?: string,
+    dateTo?: string,
+    page?: number,
+    pageSize?: number
+  ) => Promise<void>;
   getFoodItemsCount: () => Promise<void>;
 }

@@ -16,20 +16,28 @@ export function useFoodEntriesForm({ userService, foodService, isAdminForm }: IP
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const formMethods = useForm<TFormData>();
   const { setValue } = formMethods;
+  const [page, setPage] = useState<number>(0);
+  const [rowsPerPage, setRowsPerPage] = useState<number>(10);
 
   const loadData = async (dateFrom?: Dayjs, dayTo?: Dayjs) => {
+    setIsLoading(true);
     if (isAdminForm) {
       await foodService.getAll(
         dateFrom ? dateFrom.format("ddd, D MMM YYYY") : null,
-        dayTo ? dayTo.add(1, "day").format("ddd, D MMM YYYY") : null
+        dayTo ? dayTo.add(1, "day").format("ddd, D MMM YYYY") : null,
+        page + 1,
+        rowsPerPage
       );
     } else {
       await foodService.getByUserId(
         userService.currentUser.id,
         dateFrom ? dateFrom.format("ddd, D MMM YYYY") : null,
-        dayTo ? dayTo.add(1, "day").format("ddd, D MMM YYYY") : null
+        dayTo ? dayTo.add(1, "day").format("ddd, D MMM YYYY") : null,
+        page + 1,
+        rowsPerPage
       );
     }
+    setIsLoading(false);
   };
 
   const onSubmit = async (data: TFormData) => {
@@ -43,8 +51,6 @@ export function useFoodEntriesForm({ userService, foodService, isAdminForm }: IP
       alertService.error("Start date must be earlier than end date");
       return;
     }
-  
-    setIsLoading(true);
 
     await loadData(data.dateFrom, data.dateTo);
   };
@@ -59,11 +65,7 @@ export function useFoodEntriesForm({ userService, foodService, isAdminForm }: IP
     if (userService.currentUser?.id) {
         loadData();
     }
-  }, [userService.currentUser]);
-
-  useEffect(() => {
-    setIsLoading(false);
-  }, [foodService]);
+  }, [userService.currentUser, page, rowsPerPage]);
 
   const foodItems = foodService.foods;
 
@@ -73,6 +75,10 @@ export function useFoodEntriesForm({ userService, foodService, isAdminForm }: IP
     handleReset,
     isLoading,
     formMethods,
-    foodItems
+    foodItems,
+    page,
+    rowsPerPage,
+    setPage,
+    setRowsPerPage
   };
 }

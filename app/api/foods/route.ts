@@ -3,8 +3,20 @@ import joi from "joi";
 import { foodsRepo } from "@/app/_helpers/server/foods-repo";
 import { apiHandler } from "@/app/_helpers/server/api";
 
-async function getByUserId(userId: string, dateFrom?: string, dateTo?: string) {
-  return await foodsRepo.getByUserId({ userId, dateFrom, dateTo });
+async function getByUserId(
+  userId: string,
+  dateFrom?: string,
+  dateTo?: string,
+  page?: number,
+  pageSize?: number
+) {
+  return await foodsRepo.getByUserId({
+    userId,
+    dateFrom,
+    dateTo,
+    page,
+    pageSize,
+  });
 }
 
 async function getUserReachedLimitDays(userId: string, caloriesLimit: number) {
@@ -22,11 +34,19 @@ export const GET = apiHandler(async (req) => {
   const dateFrom = url.searchParams.get("dateFrom");
   const dateTo = url.searchParams.get("dateTo");
   const caloriesLimit = url.searchParams.get("caloriesLimit");
+  const page = url.searchParams.get("page");
+  const pageSize = url.searchParams.get("pageSize");
 
   if (userId && caloriesLimit) {
     return getUserReachedLimitDays(userId, parseInt(caloriesLimit));
   } else {
-    return getByUserId(userId, dateFrom, dateTo);
+    return getByUserId(
+      userId,
+      dateFrom,
+      dateTo,
+      parseInt(page),
+      parseInt(pageSize)
+    );
   }
 });
 
@@ -37,5 +57,5 @@ export const POST = apiHandler(create, {
     calorieValue: joi.string().required(),
     cheating: joi.bool().required(),
     userId: joi.string().required(),
-  })
+  }),
 });

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-
+import React, { useState } from "react";
 import {
   Table,
   TableBody,
@@ -18,6 +18,7 @@ import {
   DialogTitle,
   Button,
   Box,
+  TablePagination,
 } from "@mui/material";
 
 import {
@@ -27,14 +28,12 @@ import {
 } from "@/app/_services";
 import { Spinner } from "@/app/_components/Spinner";
 import dayjs from "dayjs";
-
 import { IconButton, Tooltip } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import { DateRange } from "@/app/_components/food/DateRange";
-import { useState } from "react";
 import { useFoodEntriesForm } from "./useFoodEntriesForm";
 
 export default function AdminFoodEntries() {
@@ -44,7 +43,7 @@ export default function AdminFoodEntries() {
   const [selectedFoodId, setSelectedFoodId] = useState<string | null>(null);
 
   const foodEntriesForm = useFoodEntriesForm({ userService, foodService, isAdminForm: true });
-  const { isLoading, foodItems } = foodEntriesForm;
+  const { isLoading, loadData, foodItems, setPage, setRowsPerPage, page, rowsPerPage } = foodEntriesForm;
 
   const handleDeleteClick = (foodId: string) => {
     setSelectedFoodId(foodId);
@@ -59,9 +58,20 @@ export default function AdminFoodEntries() {
   const handleConfirmDelete = async () => {
     if (selectedFoodId) {
       await foodService.delete(selectedFoodId);
-      foodService.getAll();
+      loadData(); // Refresh the table after deletion
     }
     setOpenDialog(false);
+  };
+
+  const handleChangePage = (event: unknown, newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0); // Reset to first page
   };
 
   return (
@@ -72,72 +82,83 @@ export default function AdminFoodEntries() {
             p: 2,
             display: "flex",
             flexDirection: "column",
-            height: 678,
+            height: 720,
           }}
         >
           <Typography component="h2" variant="h6" color="primary" gutterBottom>
             Food items
           </Typography>
 
-          {foodItems && foodItems.length > 0 && (
-            <Table size="small">
-              <TableHead>
-                <TableRow>
-                  <TableCell>User</TableCell>
-                  <TableCell>Date taken</TableCell>
-                  <TableCell>Product Name</TableCell>
-                  <TableCell>Calorie value</TableCell>
-                  <TableCell>Cheating</TableCell>
-                  <TableCell>Actions</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {foodItems.map((row) => (
-                  <TableRow key={row.id}>
-                    <TableCell>{row.user?.email}</TableCell>
-                    <TableCell>
-                      {dayjs(row.takenAt).format("DD MMM, YYYY - HH:mm")}
-                    </TableCell>
-                    <TableCell>{row.name}</TableCell>
-                    <TableCell>{row.calorieValue}</TableCell>
-                    <TableCell>
-                      {row.cheating ? (
-                        <>
-                          <ErrorOutlineIcon /> yes
-                        </>
-                      ) : (
-                        <>
-                          <CheckCircleOutlineIcon /> no
-                        </>
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      <Box sx={{ display: "flex" }}>
-                        <Link href={`/admin/food/edit/${row.id}`}>
-                          <Tooltip title="Edit">
-                            <IconButton color="secondary" aria-label="edit">
-                              <EditIcon />
+          {foodItems?.totalItems > 0 && (
+            <>
+              <Table size="small">
+                <TableHead>
+                  <TableRow>
+                    <TableCell>User</TableCell>
+                    <TableCell>Date taken</TableCell>
+                    <TableCell>Product Name</TableCell>
+                    <TableCell>Calorie value</TableCell>
+                    <TableCell>Cheating</TableCell>
+                    <TableCell>Actions</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {foodItems.items.map((row) => (
+                    <TableRow key={row.id}>
+                      <TableCell>{row.user?.email}</TableCell>
+                      <TableCell>
+                        {dayjs(row.takenAt).format("DD MMM, YYYY - HH:mm")}
+                      </TableCell>
+                      <TableCell>{row.name}</TableCell>
+                      <TableCell>{row.calorieValue}</TableCell>
+                      <TableCell>
+                        {row.cheating ? (
+                          <>
+                            <ErrorOutlineIcon /> yes
+                          </>
+                        ) : (
+                          <>
+                            <CheckCircleOutlineIcon /> no
+                          </>
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        <Box sx={{ display: "flex" }}>
+                          <Link href={`/admin/food/edit/${row.id}`}>
+                            <Tooltip title="Edit">
+                              <IconButton color="secondary" aria-label="edit">
+                                <EditIcon />
+                              </IconButton>
+                            </Tooltip>
+                          </Link>
+                          <Tooltip title="Delete">
+                            <IconButton
+                              color="error"
+                              aria-label="delete"
+                              onClick={() => handleDeleteClick(row.id)}
+                            >
+                              <DeleteIcon />
                             </IconButton>
                           </Tooltip>
-                        </Link>
-                        <Tooltip title="Delete">
-                          <IconButton
-                            color="error"
-                            aria-label="delete"
-                            onClick={() => handleDeleteClick(row.id)}
-                          >
-                            <DeleteIcon />
-                          </IconButton>
-                        </Tooltip>
-                      </Box>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                        </Box>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+              <TablePagination
+                component="div"
+                count={foodItems.totalItems}
+                page={page}
+                onPageChange={handleChangePage}
+                rowsPerPage={rowsPerPage}
+                onRowsPerPageChange={handleChangeRowsPerPage}
+                rowsPerPageOptions={[5]}
+              />
+            </>
           )}
           {isLoading && <Spinner />}
-          {!isLoading && foodItems?.length === 0 && (
+          {!isLoading && foodItems?.totalItems === 0 && (
             <div>No food to display</div>
           )}
         </Paper>
@@ -145,7 +166,7 @@ export default function AdminFoodEntries() {
 
       <Grid item xs={12} md={6} lg={4}>
         <Grid container spacing={3}>
-        <DateRange foodEntriesForm={foodEntriesForm} />
+          <DateRange foodEntriesForm={foodEntriesForm} />
         </Grid>
       </Grid>
 
