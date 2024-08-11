@@ -38,7 +38,7 @@ import { Spinner } from "../Spinner";
 
 type Props = {
   isAdmin: Boolean;
-  foodToEdit: IFoodItem;
+  foodToEdit?: IFoodItem;
 };
 
 type FormData = {
@@ -78,6 +78,8 @@ export function AddEditFood({ isAdmin, foodToEdit }: Props) {
     },
   });
 
+  const selectedDate = watch("date");
+
   useEffect(() => {
     async function loadData() {
       setLoading(true);
@@ -86,7 +88,9 @@ export function AddEditFood({ isAdmin, foodToEdit }: Props) {
         await userService.getAll();
       }
 
-      if (userService.currentUser?.id) {
+      if (foodToEdit) {
+        setValue("userId", foodToEdit.userId);
+      } else if (userService.currentUser?.id) {
         setValue("userId", userService.currentUser?.id);
       }
 
@@ -143,7 +147,11 @@ export function AddEditFood({ isAdmin, foodToEdit }: Props) {
         router.push("/");
       }
 
-      alertService.success("Food added", true);
+      if (foodToEdit) {
+        alertService.success("Food edited", true);
+      } else {
+        alertService.success("Food added", true);
+      }
     } catch (error: any) {
       alertService.error(error);
     }
@@ -158,7 +166,7 @@ export function AddEditFood({ isAdmin, foodToEdit }: Props) {
       <Grid item xs={12} sm={8} md={6}>
         <Paper sx={{ p: 4 }}>
           <Typography variant="h5" component="h1" gutterBottom>
-            Add New Food
+            {foodToEdit ? "Edit" : "Add New"} Food
           </Typography>
           <form onSubmit={handleSubmit(onSubmit)}>
             {isAdmin && (
@@ -227,7 +235,11 @@ export function AddEditFood({ isAdmin, foodToEdit }: Props) {
                         label="Select Time"
                         value={field.value}
                         ampm={false}
-                        disableFuture
+                        disableFuture={
+                          selectedDate
+                            ? dayjs().isSame(selectedDate, "day")
+                            : false
+                        }
                         onChange={(newValue) => field.onChange(newValue)}
                         slotProps={{
                           textField: {

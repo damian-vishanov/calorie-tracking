@@ -109,8 +109,7 @@ async function create(params: any) {
 }
 
 async function update(id: string, params: any) {
-  const user = await Food.findById(id);
-  await user.save();
+  await Food.findOneAndUpdate({ _id: id }, params);
 }
 
 async function _delete(id: string) {

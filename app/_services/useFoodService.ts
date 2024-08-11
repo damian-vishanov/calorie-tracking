@@ -55,7 +55,7 @@ export function useFoodService(): IFoodService {
       await fetch.put(`/api/admin/food-items/${id}`, params);
     },
     delete: async (id) => {
-      await fetch.delete(`/api/admin/food-items`, id);
+      await fetch.delete(`/api/admin/food-items/${id}`);
     },
   };
 }
