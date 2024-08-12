@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Table,
   TableBody,
@@ -29,27 +29,25 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
-import { DateRange } from "@/app/_components/food/DateRange";
 import { useUsersForm } from "./useUsersForm";
 
 export default function Users() {
   const userService = useUserService();
   const [openDialog, setOpenDialog] = useState<boolean>(false);
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
-
-  const foodEntriesForm = useUsersForm({
+  const usersForm = useUsersForm({
     userService,
-    isAdminForm: true,
   });
+
   const {
     isLoading,
     loadData,
-    foodItems,
+    users,
     setPage,
     setRowsPerPage,
     page,
     rowsPerPage,
-  } = foodEntriesForm;
+  } = usersForm;
 
   const handleDeleteClick = (foodId: string) => {
     setSelectedUserId(foodId);
@@ -82,7 +80,7 @@ export default function Users() {
 
   return (
     <Grid container spacing={3}>
-      <Grid item xs={12} md={6} lg={8}>
+      <Grid item xs={12}>
         <Paper
           sx={{
             p: 2,
@@ -92,10 +90,10 @@ export default function Users() {
           }}
         >
           <Typography component="h2" variant="h6" color="primary" gutterBottom>
-            Food items
+            Users
           </Typography>
 
-          {foodItems?.totalItems > 0 && (
+          {users?.totalItems > 0 && (
             <>
               <Table size="small">
                 <TableHead>
@@ -103,34 +101,18 @@ export default function Users() {
                     <TableCell>Email</TableCell>
                     <TableCell>Role</TableCell>
                     <TableCell>Calories limit</TableCell>
-                    <TableCell>Calorie value</TableCell>
-                    <TableCell>Created at</TableCell>
-                    <TableCell>Updated at</TableCell>
+                    <TableCell>Actions</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {foodItems.items.map((row) => (
+                  {users.items.map((row) => (
                     <TableRow key={row.id}>
-                      <TableCell>{row.user?.email}</TableCell>
-                      <TableCell>
-                        {dayjs(row.takenAt).format("DD MMM, YYYY - HH:mm")}
-                      </TableCell>
-                      <TableCell>{row.name}</TableCell>
-                      <TableCell>{row.calorieValue}</TableCell>
-                      <TableCell>
-                        {row.cheating ? (
-                          <>
-                            <ErrorOutlineIcon /> yes
-                          </>
-                        ) : (
-                          <>
-                            <CheckCircleOutlineIcon /> no
-                          </>
-                        )}
-                      </TableCell>
+                      <TableCell>{row.email}</TableCell>
+                      <TableCell>{row.role}</TableCell>
+                      <TableCell>{row.caloriesLimit}</TableCell>
                       <TableCell>
                         <Box sx={{ display: "flex" }}>
-                          <Link href={`/admin/food/edit/${row.id}`}>
+                          <Link href={`/admin/users-management/edit/${row.id}`}>
                             <Tooltip title="Edit">
                               <IconButton color="secondary" aria-label="edit">
                                 <EditIcon />
@@ -154,7 +136,7 @@ export default function Users() {
               </Table>
               <TablePagination
                 component="div"
-                count={foodItems.totalItems}
+                count={users.totalItems}
                 page={page}
                 onPageChange={handleChangePage}
                 rowsPerPage={rowsPerPage}
@@ -164,19 +146,11 @@ export default function Users() {
             </>
           )}
           {isLoading && <Spinner />}
-          {!isLoading && foodItems?.totalItems === 0 && (
+          {!isLoading && users?.totalItems === 0 && (
             <div>No food to display</div>
           )}
         </Paper>
       </Grid>
-
-      <Grid item xs={12} md={6} lg={4}>
-        <Grid container spacing={3}>
-          <DateRange foodEntriesForm={foodEntriesForm} />
-        </Grid>
-      </Grid>
-
-      {/* Delete Confirmation Dialog */}
       <Dialog
         open={openDialog}
         onClose={handleCloseDialog}

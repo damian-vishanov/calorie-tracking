@@ -5,16 +5,6 @@ import { db } from "./db";
 
 const User = db.User;
 
-export const usersRepo = {
-  authenticate,
-  getAll,
-  getById,
-  getCurrent,
-  create,
-  update,
-  // delete: _delete,
-};
-
 async function authenticate({
   email,
   password,
@@ -37,8 +27,29 @@ async function authenticate({
   };
 }
 
+async function getAllPaged(params: any) {
+  const page = params.page ? parseInt(params.page, 10) : 1;
+  const pageSize = params.pageSize ? parseInt(params.pageSize, 10) : 10;
+
+  // Calculate the number of documents to skip
+  const skip = (page - 1) * pageSize;
+
+  // Fetch the total count of documents matching the filter
+  const totalItems = await User.countDocuments();
+
+  // Fetch the documents with pagination
+  const items = await User.find().sort({ role: 1 }).skip(skip).limit(pageSize);
+
+  return {
+    items,
+    totalItems,
+    page,
+    pageSize,
+  };
+}
+
 async function getAll() {
-  return await User.find();
+  return await User.find().sort({ role: 1 });
 }
 
 async function getById(id: string) {
@@ -59,45 +70,34 @@ async function getCurrent() {
 }
 
 async function create(params: any) {
-  // validate
-  if (await User.findOne({ username: params.username })) {
-    throw 'Username "' + params.username + '" is already taken';
+  if (await User.findOne({ username: params.email })) {
+    throw 'Email "' + params.email + '" is already taken';
   }
 
   const user = new User(params);
 
-  // hash password
   if (params.password) {
     user.hash = bcrypt.hashSync(params.password, 10);
   }
 
-  // save user
   await user.save();
 }
 
 async function update(id: string, params: any) {
-  const user = await User.findById(id);
-
-  // validate
-  if (!user) throw "User not found";
-  if (
-    user.username !== params.username &&
-    (await User.findOne({ username: params.username }))
-  ) {
-    throw 'Username "' + params.username + '" is already taken';
-  }
-
-  // hash password if it was entered
-  if (params.password) {
-    params.hash = bcrypt.hashSync(params.password, 10);
-  }
-
-  // copy params properties to user
-  Object.assign(user, params);
-
-  await user.save();
+  await User.findOneAndUpdate({ _id: id }, params);
 }
 
-// async function _delete(id: string) {
-//   await User.findByIdAndRemove(id);
-// }
+async function _delete(id: string) {
+  await User.findByIdAndDelete(id);
+}
+
+export const usersRepo = {
+  authenticate,
+  getAll,
+  getAllPaged,
+  getById,
+  getCurrent,
+  create,
+  update,
+  delete: _delete,
+};

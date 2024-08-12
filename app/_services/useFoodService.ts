@@ -6,7 +6,7 @@ import { useAlertService } from "./useAlertService";
 export function useFoodService(): IFoodService {
   const alertService = useAlertService();
   const fetch = useFetch();
-  const [foods, setFoods] = useState<IFoodItems>(null);
+  const [foods, setFoods] = useState<IFoodItems | null>(null);
   const [food, setFood] = useState<IFoodItem | null>(null);
   const [daysReachedLimit, setDaysReachedLimit] = useState<Date[]>([]);
 

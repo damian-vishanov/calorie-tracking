@@ -13,7 +13,7 @@ export interface IFoodEntriesForm {
   handleReset: () => Promise<void>;
   isLoading: boolean;
   formMethods: UseFormReturn<TFormData, any, undefined>;
-  foodItems: any;
+  users: any;
   setPage: Dispatch<SetStateAction<number>>;
   setRowsPerPage: Dispatch<SetStateAction<number>>;
   page: number;

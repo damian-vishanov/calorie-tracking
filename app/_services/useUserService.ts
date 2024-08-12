@@ -12,12 +12,14 @@ export function useUserService(): IUserService {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [users, setUsers] = useState<IUser[]>([]);
+  const [user, setUser] = useState<IUser | null>(null);
 
   const dispatch = useDispatch();
   const currentUser = useSelector(selectCurrentUser);
 
   return {
     currentUser,
+    user,
     users,
     login: async (email, password) => {
       alertService.clear();
@@ -39,23 +41,36 @@ export function useUserService(): IUserService {
       await fetch.post("/api/account/logout");
       router.push("/account/login");
     },
-    getAll: async () => {
-      const getUsers = await fetch.get("/api/admin/users");
+    getAll: async (page, pageSize) => {
+      let path = "/api/admin/users";
+      if (page && pageSize) {
+        path += `?page=${page}&pageSize=${pageSize}`;
+      }
+      const getUsers = await fetch.get(path);
       setUsers(getUsers);
     },
-    // getById: async (id) => {
-    //     userStore.setState({ user: undefined });
-    //     try {
-    //         userStore.setState({ user: await fetch.get(`/api/users/${id}`) });
-    //     } catch (error: any) {
-    //         alertService.error(error);
-    //     }
-    // },
+    getById: async (id) => {
+      try {
+        const user = await fetch.get(`/api/admin/users?id=${id}`);
+        setUser(user);
+      } catch (error: any) {
+        alertService.error(error);
+      }
+    },
     getCurrent: async () => {
       if (!currentUser?.id) {
         const currentUser = await fetch.get("/api/users/current");
         dispatch(setCurrentUser(currentUser));
       }
+    },
+    create: async (user) => {
+      await fetch.post("/api/admin/users", user);
+    },
+    update: async (id, params) => {
+      await fetch.put(`/api/admin/users/${id}`, params);
+    },
+    delete: async (id) => {
+      await fetch.delete(`/api/admin/users/${id}`);
     },
     // create: async (user) => {
     //     await fetch.post('/api/users', user);
@@ -95,16 +110,21 @@ export function useUserService(): IUserService {
 
 interface IUserStore {
   users?: IUser[];
+  user?: IUser;
   currentUser?: IUser;
+}
+
+interface IUserCreate extends IUser {
+  password: string;
 }
 
 export interface IUserService extends IUserStore {
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
-  getAll: () => Promise<void>;
-  // getById: (id: string) => Promise<void>,
+  getAll: (page?: number, pageSize?: number) => Promise<void>;
+  getById: (id: string) => Promise<void>;
   getCurrent: () => Promise<void>;
-  // create: (user: IUser) => Promise<void>,
-  // update: (id: string, params: Partial<IUser>) => Promise<void>,
-  // delete: (id: string) => Promise<void>
+  create: (user: IUserCreate) => Promise<void>;
+  update: (id: string, params: IUser) => Promise<void>;
+  delete: (id: string) => Promise<void>;
 }

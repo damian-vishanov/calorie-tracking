@@ -273,7 +273,7 @@ export function AddEditFood({ isAdmin, foodToEdit }: Props) {
                   required: "Calorie value is required",
                   pattern: {
                     value: /^\d+$/,
-                    message: "Calorie value must be a number",
+                    message: "Calorie value must be a positive number",
                   },
                 })}
                 label="Calorie Value"

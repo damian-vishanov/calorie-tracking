@@ -7,13 +7,9 @@ import { IUserService } from "@/app/_services";
 
 type Props = {
   userService: IUserService;
-  isAdminForm?: boolean;
 };
 
-export function useUsersForm({
-  userService,
-  isAdminForm,
-}: Props): IFoodEntriesForm {
+export function useUsersForm({ userService }: Props): IFoodEntriesForm {
   const alertService = useAlertService();
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const formMethods = useForm<TFormData>();
@@ -21,33 +17,16 @@ export function useUsersForm({
   const [page, setPage] = useState<number>(0);
   const [rowsPerPage, setRowsPerPage] = useState<number>(10);
 
-  const loadData = async (dateFrom?: Dayjs, dayTo?: Dayjs) => {
+  const loadData = async () => {
     setIsLoading(true);
-    if (isAdminForm) {
-      // await userService.getAll(page + 1, rowsPerPage);
-    } else {
-      // await userService.getByUserId(
-      //   userService.currentUser.id,
-      //   page + 1,
-      //   rowsPerPage
-      // );
-    }
+    await userService.getAll(page + 1, rowsPerPage);
     setIsLoading(false);
   };
 
   const onSubmit = async (data: TFormData) => {
     alertService.clear();
-    if (!data.dateFrom || !data.dateTo) {
-      alertService.error("Please select start and end dates");
-      return;
-    }
 
-    if (data.dateFrom > data.dateTo) {
-      alertService.error("Start date must be earlier than end date");
-      return;
-    }
-
-    await loadData(data.dateFrom, data.dateTo);
+    await loadData();
   };
 
   const handleReset = async () => {
@@ -62,7 +41,7 @@ export function useUsersForm({
     }
   }, [userService.currentUser, page, rowsPerPage]);
 
-  const foodItems = userService.users;
+  const users = userService.users;
 
   return {
     loadData,
@@ -70,7 +49,7 @@ export function useUsersForm({
     handleReset,
     isLoading,
     formMethods,
-    foodItems,
+    users,
     page,
     rowsPerPage,
     setPage,
