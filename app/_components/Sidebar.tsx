@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 import { styled } from "@mui/material/styles";
 import MuiDrawer from "@mui/material/Drawer";
@@ -62,6 +63,7 @@ type Props = {
 };
 
 export default function Sidebar({ isSidebarOpen, toggleSidebar }: Props) {
+  const pathname = usePathname();
   const userService = useUserService();
   const [foodMenuOpen, setFoodMenuOpen] = useState(true);
   const [adminMenuOpen, setAdminMenuOpen] = useState(true);
@@ -73,6 +75,8 @@ export default function Sidebar({ isSidebarOpen, toggleSidebar }: Props) {
       setAdminMenuOpen(!adminMenuOpen);
     }
   };
+
+  useEffect(() => console.log(pathname));
 
   return (
     <Drawer variant="permanent" open={isSidebarOpen}>
@@ -99,7 +103,7 @@ export default function Sidebar({ isSidebarOpen, toggleSidebar }: Props) {
         <Collapse in={foodMenuOpen} timeout="auto" unmountOnExit>
           <List component="div" disablePadding>
             <Link href="/" passHref>
-              <ListItemButton sx={{ pl: 4 }}>
+              <ListItemButton sx={{ pl: 4 }} selected={pathname === "/"}>
                 <ListItemIcon>
                   <FormatListBulletedIcon />
                 </ListItemIcon>
@@ -109,7 +113,10 @@ export default function Sidebar({ isSidebarOpen, toggleSidebar }: Props) {
           </List>
           <List component="div" disablePadding>
             <Link href="/food/add" passHref>
-              <ListItemButton sx={{ pl: 4 }}>
+              <ListItemButton
+                sx={{ pl: 4 }}
+                selected={pathname === "/food/add"}
+              >
                 <ListItemIcon>
                   <AddIcon />
                 </ListItemIcon>
@@ -132,7 +139,10 @@ export default function Sidebar({ isSidebarOpen, toggleSidebar }: Props) {
             <Collapse in={adminMenuOpen} timeout="auto" unmountOnExit>
               <List component="div" disablePadding>
                 <Link href="/admin/food" passHref>
-                  <ListItemButton sx={{ pl: 4 }}>
+                  <ListItemButton
+                    sx={{ pl: 4 }}
+                    selected={pathname === "/admin/food"}
+                  >
                     <ListItemIcon>
                       <ManageSearchIcon />
                     </ListItemIcon>
@@ -142,7 +152,10 @@ export default function Sidebar({ isSidebarOpen, toggleSidebar }: Props) {
               </List>
               <List component="div" disablePadding>
                 <Link href="/admin/food/add" passHref>
-                  <ListItemButton sx={{ pl: 4 }}>
+                  <ListItemButton
+                    sx={{ pl: 4 }}
+                    selected={pathname === "/admin/food/add"}
+                  >
                     <ListItemIcon>
                       <AddIcon />
                     </ListItemIcon>
@@ -152,7 +165,10 @@ export default function Sidebar({ isSidebarOpen, toggleSidebar }: Props) {
               </List>
               <List component="div" disablePadding>
                 <Link href="/admin/reports" passHref>
-                  <ListItemButton sx={{ pl: 4 }}>
+                  <ListItemButton
+                    sx={{ pl: 4 }}
+                    selected={pathname === "/admin/reports"}
+                  >
                     <ListItemIcon>
                       <BarChartIcon />
                     </ListItemIcon>
@@ -162,7 +178,10 @@ export default function Sidebar({ isSidebarOpen, toggleSidebar }: Props) {
               </List>
               <List component="div" disablePadding>
                 <Link href="/admin/users-management" passHref>
-                  <ListItemButton sx={{ pl: 4 }}>
+                  <ListItemButton
+                    sx={{ pl: 4 }}
+                    selected={pathname === "/admin/users-management"}
+                  >
                     <ListItemIcon>
                       <ManageAccountsIcon />
                     </ListItemIcon>
