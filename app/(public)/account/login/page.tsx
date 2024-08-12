@@ -71,7 +71,6 @@ export default function Login() {
           autoFocus
           error={!!errors.email}
           helperText={errors.email ? errors.email.message : ""}
-          defaultValue={"admin@test.com"}
         />
         <TextField
           {...register("password", {
@@ -86,7 +85,6 @@ export default function Login() {
           autoComplete="current-password"
           error={!!errors.password}
           helperText={errors.password ? errors.password.message : ""}
-          defaultValue={"123456"}
         />
         <Button
           type="submit"

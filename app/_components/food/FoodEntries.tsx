@@ -82,13 +82,13 @@ export function FoodEntries() {
 
   return (
     <Grid container spacing={3}>
-      <Grid item xs={12} md={6} lg={8}>
+      <Grid item xs={12} lg={8}>
         <Paper
           sx={{
             p: 2,
             display: "flex",
             flexDirection: "column",
-            height: 760,
+            minHeight: 760,
           }}
         >
           <Typography
@@ -174,7 +174,7 @@ export function FoodEntries() {
         </Paper>
       </Grid>
 
-      <Grid item xs={12} md={6} lg={4}>
+      <Grid item xs={12} lg={4}>
         <Grid container spacing={3}>
           <DateRange foodEntriesForm={foodEntriesForm} />
           <ReachedDays

@@ -86,13 +86,13 @@ export default function AdminFoodEntries() {
 
   return (
     <Grid container spacing={3}>
-      <Grid item xs={12} md={6} lg={8}>
+      <Grid item xs={12} lg={8}>
         <Paper
           sx={{
             p: 2,
             display: "flex",
             flexDirection: "column",
-            height: 760,
+            minHeight: 760,
           }}
         >
           <Typography component="h2" variant="h6" color="primary" gutterBottom>
@@ -172,7 +172,7 @@ export default function AdminFoodEntries() {
           )}
         </Paper>
       </Grid>
-      <Grid item xs={12} md={6} lg={4}>
+      <Grid item xs={12} lg={4}>
         <Grid container spacing={3}>
           <DateRange foodEntriesForm={foodEntriesForm} />
         </Grid>
