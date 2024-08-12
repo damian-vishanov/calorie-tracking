@@ -66,12 +66,12 @@ export default function Sidebar({ isSidebarOpen, toggleSidebar }: Props) {
   const [foodMenuOpen, setFoodMenuOpen] = useState(true);
   const [adminMenuOpen, setAdminMenuOpen] = useState(true);
 
-  const handleFoodMenuClick = () => {
-    setFoodMenuOpen(!foodMenuOpen);
-  };
-
-  const handleAdminMenuClick = () => {
-    setAdminMenuOpen(!adminMenuOpen);
+  const handleMenuClick = (menu: string) => {
+    if (menu === "food") {
+      setFoodMenuOpen(!foodMenuOpen);
+    } else if (menu === "admin") {
+      setAdminMenuOpen(!adminMenuOpen);
+    }
   };
 
   return (
@@ -89,7 +89,7 @@ export default function Sidebar({ isSidebarOpen, toggleSidebar }: Props) {
         </IconButton>
       </Toolbar>
       <List component="nav">
-        <ListItemButton onClick={handleFoodMenuClick}>
+        <ListItemButton onClick={() => handleMenuClick("food")}>
           <ListItemIcon>
             <FastfoodIcon />
           </ListItemIcon>
@@ -122,7 +122,7 @@ export default function Sidebar({ isSidebarOpen, toggleSidebar }: Props) {
       {!!userService.currentUser?.id &&
         userService.currentUser.role === "Admin" && (
           <List component="nav">
-            <ListItemButton onClick={handleAdminMenuClick}>
+            <ListItemButton onClick={() => handleMenuClick("admin")}>
               <ListItemIcon>
                 <AdminPanelSettingsIcon />
               </ListItemIcon>
