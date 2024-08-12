@@ -7,6 +7,7 @@ import { IconButton, Typography, Toolbar, Box } from "@mui/material";
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
 import MenuIcon from "@mui/icons-material/Menu";
 import LogoutIcon from "@mui/icons-material/Logout";
+import LocalFireDepartmentIcon from "@mui/icons-material/LocalFireDepartment";
 
 import { useUserService } from "../_services/useUserService";
 
@@ -75,6 +76,7 @@ export default function Header({ isSidebarOpen, toggleSidebar }: HeaderProps) {
           >
             <MenuIcon />
           </IconButton>
+          <LocalFireDepartmentIcon fontSize="large" sx={{ mr: 1 }} />
           <Typography
             component="h1"
             variant="h6"
