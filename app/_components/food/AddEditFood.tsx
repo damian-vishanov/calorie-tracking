@@ -141,10 +141,18 @@ export function AddEditFood({ isAdmin, foodToEdit }: Props) {
         await foodService.create(formattedData);
       }
 
-      if (foodToEdit || isAdmin) {
-        router.push("/admin/food");
+      if (foodToEdit) {
+        if (isAdmin) {
+          router.push("/admin/food");
+        } else {
+          router.push("/");
+        }
       } else {
-        router.push("/");
+        if (isAdmin) {
+          router.push("/admin/food");
+        } else {
+          router.push("/");
+        }
       }
 
       if (foodToEdit) {

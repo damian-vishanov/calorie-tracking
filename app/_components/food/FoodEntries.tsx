@@ -13,7 +13,17 @@ import {
   Grid,
   Paper,
   Box,
+  Tooltip,
+  IconButton,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+  Button,
 } from "@mui/material";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import dayjs from "dayjs";
@@ -27,7 +37,17 @@ export function FoodEntries() {
   const foodService = useFoodService();
   const userService = useUserService();
   const foodEntriesForm = useFoodEntriesForm({ userService, foodService });
-  const { isLoading, foodItems, setPage, setRowsPerPage, page, rowsPerPage } = foodEntriesForm;
+  const [openDialog, setOpenDialog] = useState<boolean>(false);
+  const [selectedFoodId, setSelectedFoodId] = useState<string | null>(null);
+  const {
+    isLoading,
+    loadData,
+    foodItems,
+    setPage,
+    setRowsPerPage,
+    page,
+    rowsPerPage,
+  } = foodEntriesForm;
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
@@ -37,7 +57,25 @@ export function FoodEntries() {
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0); // Reset to first page
+    setPage(0);
+  };
+
+  const handleDeleteClick = (foodId: string) => {
+    setSelectedFoodId(foodId);
+    setOpenDialog(true);
+  };
+
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+    setSelectedFoodId(null);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (selectedFoodId) {
+      await foodService.delete(selectedFoodId);
+      loadData(); // Refresh the table after deletion
+    }
+    setOpenDialog(false);
   };
 
   return (
@@ -64,6 +102,7 @@ export function FoodEntries() {
                     <TableCell>Product Name</TableCell>
                     <TableCell>Calorie value</TableCell>
                     <TableCell>Cheating</TableCell>
+                    <TableCell>Actions</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -77,13 +116,33 @@ export function FoodEntries() {
                       <TableCell>
                         {row.cheating ? (
                           <Box display="flex" alignItems="center">
-                            <ErrorOutlineIcon /> Yes
+                            <ErrorOutlineIcon sx={{ mr: 1 }} /> Yes
                           </Box>
                         ) : (
                           <Box display="flex" alignItems="center">
-                            <CheckCircleOutlineIcon /> No
+                            <CheckCircleOutlineIcon sx={{ mr: 1 }} /> No
                           </Box>
                         )}
+                      </TableCell>
+                      <TableCell>
+                        <Box sx={{ display: "flex" }}>
+                          <Link href={`/food/edit/${row.id}`}>
+                            <Tooltip title="Edit">
+                              <IconButton color="secondary" aria-label="edit">
+                                <EditIcon />
+                              </IconButton>
+                            </Tooltip>
+                          </Link>
+                          <Tooltip title="Delete">
+                            <IconButton
+                              color="error"
+                              aria-label="delete"
+                              onClick={() => handleDeleteClick(row.id)}
+                            >
+                              <DeleteIcon />
+                            </IconButton>
+                          </Tooltip>
+                        </Box>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -133,10 +192,7 @@ export function FoodEntries() {
                 Taken calories
               </Typography>
               <Typography component="p" variant="h4">
-                {foodItems?.totalItems > 0 &&
-                  foodItems?.items
-                    .map((el) => !el.cheating && parseInt(el.calorieValue))
-                    .reduce((acc, el) => acc + el, 0)}
+                {foodItems?.takenCalories}
               </Typography>
             </Paper>
           </Grid>
@@ -146,7 +202,7 @@ export function FoodEntries() {
                 p: 2,
                 display: "flex",
                 flexDirection: "column",
-                height: 210,
+                height: 130,
               }}
             >
               <Typography
@@ -160,18 +216,33 @@ export function FoodEntries() {
               <Typography component="p" variant="h4">
                 {userService.currentUser?.caloriesLimit}
               </Typography>
-              <Typography color="text.secondary" sx={{ flex: 1 }}>
-                Updated on 15 March, 2019
-              </Typography>
-              <div>
-                <Link href="/path/to/change/limit" color="primary">
-                  Change limit
-                </Link>
-              </div>
             </Paper>
           </Grid>
         </Grid>
       </Grid>
+      <Dialog
+        open={openDialog}
+        onClose={handleCloseDialog}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {"Are you sure you want to delete this item?"}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Deleting this item cannot be undone.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDialog} color="primary">
+            No
+          </Button>
+          <Button onClick={handleConfirmDelete} color="error" autoFocus>
+            Yes
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Grid>
   );
 }

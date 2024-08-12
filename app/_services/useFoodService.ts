@@ -81,6 +81,7 @@ interface IFoodItems {
   totalItems: number;
   page: number;
   pageSize: number;
+  takenCalories?: number;
 }
 
 interface IFoodStore {

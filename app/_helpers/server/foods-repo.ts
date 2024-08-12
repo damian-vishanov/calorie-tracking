@@ -52,35 +52,46 @@ async function getByUserId(params: any) {
     filter = {
       userId: new mongoose.Types.ObjectId(params.userId),
       takenAt: {
-        $gte: params.dateFrom,
-        $lte: params.dateTo,
+        $gte: new Date(params.dateFrom),
+        $lte: new Date(params.dateTo),
       },
     };
   } else {
     filter = {
-      userId: params.userId,
+      userId: new mongoose.Types.ObjectId(params.userId),
     };
   }
 
+  // Pagination logic
   const page = params.page ? parseInt(params.page, 10) : 1;
   const pageSize = params.pageSize ? parseInt(params.pageSize, 10) : 10;
-
-  // Calculate the number of documents to skip
   const skip = (page - 1) * pageSize;
 
   // Fetch the total count of documents matching the filter
   const totalItems = await Food.countDocuments(filter);
 
+  // Fetch the documents with pagination
   const items = await Food.find(filter)
     .sort({ takenAt: -1 })
     .skip(skip)
     .limit(pageSize);
+
+  // Calculate the total calorie value for the given period
+  const totalCalorieData = await Food.aggregate([
+    { $match: filter }, // Apply the filter for the user and date range
+    { $group: { _id: null, totalCalories: { $sum: "$calorieValue" } } }, // Sum up the calorie values
+  ]);
+
+  // Extract the total calories from the aggregation result
+  const takenCalories =
+    totalCalorieData.length > 0 ? totalCalorieData[0].totalCalories : 0;
 
   return {
     items,
     totalItems,
     page,
     pageSize,
+    takenCalories,
   };
 }
 

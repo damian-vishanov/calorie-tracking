@@ -42,8 +42,20 @@ export default function AdminFoodEntries() {
   const [openDialog, setOpenDialog] = useState<boolean>(false);
   const [selectedFoodId, setSelectedFoodId] = useState<string | null>(null);
 
-  const foodEntriesForm = useFoodEntriesForm({ userService, foodService, isAdminForm: true });
-  const { isLoading, loadData, foodItems, setPage, setRowsPerPage, page, rowsPerPage } = foodEntriesForm;
+  const foodEntriesForm = useFoodEntriesForm({
+    userService,
+    foodService,
+    isAdminForm: true,
+  });
+  const {
+    isLoading,
+    loadData,
+    foodItems,
+    setPage,
+    setRowsPerPage,
+    page,
+    rowsPerPage,
+  } = foodEntriesForm;
 
   const handleDeleteClick = (foodId: string) => {
     setSelectedFoodId(foodId);
@@ -113,13 +125,13 @@ export default function AdminFoodEntries() {
                       <TableCell>{row.calorieValue}</TableCell>
                       <TableCell>
                         {row.cheating ? (
-                          <>
-                            <ErrorOutlineIcon /> yes
-                          </>
+                          <Box display="flex" alignItems="center">
+                            <ErrorOutlineIcon sx={{ mr: 1 }} /> Yes
+                          </Box>
                         ) : (
-                          <>
-                            <CheckCircleOutlineIcon /> no
-                          </>
+                          <Box display="flex" alignItems="center">
+                            <CheckCircleOutlineIcon sx={{ mr: 1 }} /> No
+                          </Box>
                         )}
                       </TableCell>
                       <TableCell>
@@ -169,8 +181,6 @@ export default function AdminFoodEntries() {
           <DateRange foodEntriesForm={foodEntriesForm} />
         </Grid>
       </Grid>
-
-      {/* Delete Confirmation Dialog */}
       <Dialog
         open={openDialog}
         onClose={handleCloseDialog}
