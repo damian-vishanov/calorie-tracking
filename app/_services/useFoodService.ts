@@ -30,7 +30,7 @@ export function useFoodService(): IFoodService {
     },
     getById: async (id) => {
       try {
-        const food = await fetch.get(`/api/admin/food-items?id=${id}`);
+        const food = await fetch.get(`/api/admin/food-items/${id}`);
         setFood(food);
       } catch (error: any) {
         alertService.error(error);
@@ -50,7 +50,7 @@ export function useFoodService(): IFoodService {
     },
     getUserReachedLimitDays: async (userId, caloriesLimit) => {
       const days = await fetch.get(
-        `/api/foods?userId=${userId}&caloriesLimit=${caloriesLimit}`
+        `/api/foods/reached-limit-days?userId=${userId}&caloriesLimit=${caloriesLimit}`
       );
       setDaysReachedLimit(days);
     },

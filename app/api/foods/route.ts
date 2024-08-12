@@ -18,10 +18,6 @@ async function getByUserId(
   });
 }
 
-async function getUserReachedLimitDays(userId: string, caloriesLimit: number) {
-  return await foodsRepo.getUserReachedLimitDays({ userId, caloriesLimit });
-}
-
 async function create(req: Request) {
   const body = await req.json();
   await foodsRepo.create(body);
@@ -32,21 +28,16 @@ export const GET = apiHandler(async (req) => {
   const userId = url.searchParams.get("userId");
   const dateFrom = url.searchParams.get("dateFrom");
   const dateTo = url.searchParams.get("dateTo");
-  const caloriesLimit = url.searchParams.get("caloriesLimit");
   const page = url.searchParams.get("page");
   const pageSize = url.searchParams.get("pageSize");
 
-  if (userId && caloriesLimit) {
-    return getUserReachedLimitDays(userId, parseInt(caloriesLimit));
-  } else {
-    return getByUserId(
-      userId,
-      dateFrom,
-      dateTo,
-      parseInt(page),
-      parseInt(pageSize)
-    );
-  }
+  return getByUserId(
+    userId,
+    dateFrom,
+    dateTo,
+    parseInt(page),
+    parseInt(pageSize)
+  );
 });
 
 export const POST = apiHandler(create, {
