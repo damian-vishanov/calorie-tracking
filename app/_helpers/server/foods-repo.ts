@@ -150,47 +150,63 @@ async function getFoodItemsCount() {
   const serverTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
   const today = new Date();
 
-  const currentWeekEnd = new Date(today);
-  const currentWeekStart = new Date(today);
-  currentWeekStart.setDate(today.getDate() - 6);
+  function getWeekBounds(date) {
+    const dayOfWeek = date.getUTCDay(); // Sunday is 0, Monday is 1, etc.
+    const startOfWeek = new Date(
+      Date.UTC(
+        date.getUTCFullYear(),
+        date.getUTCMonth(),
+        date.getUTCDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1) // Monday as the start
+      )
+    );
+    const endOfWeek = new Date(
+      Date.UTC(
+        date.getUTCFullYear(),
+        date.getUTCMonth(),
+        date.getUTCDate() + (dayOfWeek === 0 ? 0 : 7 - dayOfWeek) // Sunday as the end
+      )
+    );
+    endOfWeek.setUTCHours(23, 59, 59, 999); // End of the day
 
-  const previousWeekEnd = new Date(today);
-  previousWeekEnd.setDate(today.getDate() - 7);
-  const previousWeekStart = new Date(today);
-  previousWeekStart.setDate(today.getDate() - 13);
+    return { startOfWeek, endOfWeek };
+  }
+
+  // Get the start and end dates for the current and previous weeks
+  const { startOfWeek: currentWeekStart, endOfWeek: currentWeekEnd } =
+    getWeekBounds(today);
+
+  const previousWeekStart = new Date(currentWeekStart);
+  previousWeekStart.setUTCDate(currentWeekStart.getUTCDate() - 7);
+
+  const previousWeekEnd = new Date(currentWeekStart);
+  previousWeekEnd.setUTCDate(currentWeekStart.getUTCDate() - 1);
+  previousWeekEnd.setUTCHours(23, 59, 59, 999);
 
   function formatDateOnly(date) {
     return date.toISOString().split("T")[0];
   }
 
+  const currentWeekStartISO = formatDateOnly(currentWeekStart);
+  const currentWeekEndISO = formatDateOnly(currentWeekEnd);
+  const previousWeekStartISO = formatDateOnly(previousWeekStart);
+  const previousWeekEndISO = formatDateOnly(previousWeekEnd);
+
+  console.log("Current Week Start:", currentWeekStart.toISOString());
+  console.log("Current Week End:", currentWeekEnd.toISOString());
+  console.log("Previous Week Start:", previousWeekStart.toISOString());
+  console.log("Previous Week End:", previousWeekEnd.toISOString());
+
+  // Aggregate counts for the current week
   const currentWeekCounts = await Food.aggregate([
     {
       $match: {
         $expr: {
           $and: [
             {
-              $gte: [
-                {
-                  $dateToString: {
-                    format: "%Y-%m-%d",
-                    date: "$takenAt",
-                    timezone: serverTimezone,
-                  },
-                },
-                formatDateOnly(currentWeekStart),
-              ],
+              $gte: ["$takenAt", currentWeekStart],
             },
             {
-              $lte: [
-                {
-                  $dateToString: {
-                    format: "%Y-%m-%d",
-                    date: "$takenAt",
-                    timezone: serverTimezone,
-                  },
-                },
-                formatDateOnly(currentWeekEnd),
-              ],
+              $lte: ["$takenAt", currentWeekEnd],
             },
           ],
         },
@@ -201,18 +217,8 @@ async function getFoodItemsCount() {
         _id: {
           $dateToString: {
             format: "%Y-%m-%d",
-            date: {
-              $dateFromParts: {
-                year: { $year: { date: "$takenAt", timezone: serverTimezone } },
-                month: {
-                  $month: { date: "$takenAt", timezone: serverTimezone },
-                },
-                day: {
-                  $dayOfMonth: { date: "$takenAt", timezone: serverTimezone },
-                },
-              },
-            },
-            timezone: serverTimezone,
+            date: "$takenAt",
+            timezone: "UTC",
           },
         },
         count: { $sum: 1 },
@@ -223,34 +229,17 @@ async function getFoodItemsCount() {
     },
   ]);
 
+  // Aggregate counts for the previous week
   const previousWeekCounts = await Food.aggregate([
     {
       $match: {
         $expr: {
           $and: [
             {
-              $gte: [
-                {
-                  $dateToString: {
-                    format: "%Y-%m-%d",
-                    date: "$takenAt",
-                    timezone: serverTimezone,
-                  },
-                },
-                formatDateOnly(previousWeekStart),
-              ],
+              $gte: ["$takenAt", previousWeekStart],
             },
             {
-              $lte: [
-                {
-                  $dateToString: {
-                    format: "%Y-%m-%d",
-                    date: "$takenAt",
-                    timezone: serverTimezone,
-                  },
-                },
-                formatDateOnly(previousWeekEnd),
-              ],
+              $lte: ["$takenAt", previousWeekEnd],
             },
           ],
         },
@@ -261,18 +250,8 @@ async function getFoodItemsCount() {
         _id: {
           $dateToString: {
             format: "%Y-%m-%d",
-            date: {
-              $dateFromParts: {
-                year: { $year: { date: "$takenAt", timezone: serverTimezone } },
-                month: {
-                  $month: { date: "$takenAt", timezone: serverTimezone },
-                },
-                day: {
-                  $dayOfMonth: { date: "$takenAt", timezone: serverTimezone },
-                },
-              },
-            },
-            timezone: serverTimezone,
+            date: "$takenAt",
+            timezone: "UTC",
           },
         },
         count: { $sum: 1 },
@@ -283,14 +262,14 @@ async function getFoodItemsCount() {
     },
   ]);
 
+  // Prepare results for each day of the current and previous week
   const results = [];
-
   for (let i = 0; i < 7; i++) {
     const currentDay = new Date(currentWeekStart);
-    currentDay.setDate(currentWeekStart.getDate() + i);
+    currentDay.setUTCDate(currentWeekStart.getUTCDate() + i);
 
     const previousDay = new Date(previousWeekStart);
-    previousDay.setDate(previousWeekStart.getDate() + i);
+    previousDay.setUTCDate(previousWeekStart.getUTCDate() + i);
 
     const formattedCurrentDay = formatDateOnly(currentDay);
     const formattedPreviousDay = formatDateOnly(previousDay);

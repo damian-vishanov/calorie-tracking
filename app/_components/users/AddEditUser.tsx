@@ -170,9 +170,7 @@ export function AddEditUser({ userToEdit }: Props) {
             </Box>
             <Box sx={{ mb: 3, mt: 3 }}>
               <FormControl fullWidth error={!!errors.role}>
-                <InputLabel id="role-select-label" shrink={!!userToEdit}>
-                  Role
-                </InputLabel>
+                <InputLabel id="role-select-label">Role</InputLabel>
                 <Controller
                   name="role"
                   control={control}
