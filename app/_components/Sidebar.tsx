@@ -51,15 +51,12 @@ const Drawer = styled(MuiDrawer, {
   },
 }));
 
-interface SidebarProps {
+type Props = {
   isSidebarOpen: boolean;
   toggleSidebar: Function;
-}
+};
 
-export default function Sidebar({
-  isSidebarOpen,
-  toggleSidebar,
-}: SidebarProps) {
+export default function Sidebar({ isSidebarOpen, toggleSidebar }: Props) {
   const userService = useUserService();
   const [foodMenuOpen, setFoodMenuOpen] = useState(true);
   const [adminMenuOpen, setAdminMenuOpen] = useState(true);

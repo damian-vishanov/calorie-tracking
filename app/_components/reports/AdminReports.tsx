@@ -136,7 +136,7 @@ export default function AdminReports() {
                   {usersCalories?.users.map((row) => (
                     <TableRow key={row.id}>
                       <TableCell>{row.email}</TableCell>
-                      <TableCell>{row.averageCalories}</TableCell>
+                      <TableCell>{Math.round(row.averageCalories)}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>

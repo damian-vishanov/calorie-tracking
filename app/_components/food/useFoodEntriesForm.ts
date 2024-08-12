@@ -5,13 +5,17 @@ import { Dayjs } from "dayjs";
 import { TFormData, IFoodEntriesForm } from "./commonTypes";
 import { IFoodService, IUserService } from "@/app/_services";
 
-interface IProps {
+type Props = {
   userService: IUserService;
   foodService: IFoodService;
   isAdminForm?: boolean;
-}
+};
 
-export function useFoodEntriesForm({ userService, foodService, isAdminForm }: IProps): IFoodEntriesForm {
+export function useFoodEntriesForm({
+  userService,
+  foodService,
+  isAdminForm,
+}: Props): IFoodEntriesForm {
   const alertService = useAlertService();
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const formMethods = useForm<TFormData>();
@@ -46,7 +50,7 @@ export function useFoodEntriesForm({ userService, foodService, isAdminForm }: IP
       alertService.error("Please select start and end dates");
       return;
     }
-  
+
     if (data.dateFrom > data.dateTo) {
       alertService.error("Start date must be earlier than end date");
       return;
@@ -63,7 +67,7 @@ export function useFoodEntriesForm({ userService, foodService, isAdminForm }: IP
 
   useEffect(() => {
     if (userService.currentUser?.id) {
-        loadData();
+      loadData();
     }
   }, [userService.currentUser, page, rowsPerPage]);
 
@@ -79,6 +83,6 @@ export function useFoodEntriesForm({ userService, foodService, isAdminForm }: IP
     page,
     rowsPerPage,
     setPage,
-    setRowsPerPage
+    setRowsPerPage,
   };
 }
