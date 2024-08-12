@@ -53,7 +53,7 @@ export function ReachedDays({
           <DateCalendar
             value={null}
             views={["day"]}
-            sx={{ width: "100%" }}
+            sx={{ width: "100%", maxWidth: "280px" }}
             disableFuture
             onChange={(newValue) => {
               setValue("dateFrom", newValue);
