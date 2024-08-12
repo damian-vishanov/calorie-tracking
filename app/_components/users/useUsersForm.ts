@@ -24,13 +24,13 @@ export function useUsersForm({
   const loadData = async (dateFrom?: Dayjs, dayTo?: Dayjs) => {
     setIsLoading(true);
     if (isAdminForm) {
-      await userService.getAll(page + 1, rowsPerPage);
+      // await userService.getAll(page + 1, rowsPerPage);
     } else {
-      await userService.getByUserId(
-        userService.currentUser.id,
-        page + 1,
-        rowsPerPage
-      );
+      // await userService.getByUserId(
+      //   userService.currentUser.id,
+      //   page + 1,
+      //   rowsPerPage
+      // );
     }
     setIsLoading(false);
   };
