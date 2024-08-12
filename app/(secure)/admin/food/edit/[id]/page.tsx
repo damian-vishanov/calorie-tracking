@@ -13,12 +13,12 @@ function Edit({ params: { id } }: any) {
   const foodService = useFoodService();
   const food = foodService.food;
 
-  if (!id) {
-    router.push("/");
-    return;
-  }
-
   useEffect(() => {
+    if (!id) {
+      router.push("/");
+      return;
+    }
+
     const loadData = async () => {
       await foodService.getById(id);
     };

@@ -1,14 +1,17 @@
-module.exports = {
-  extends: "next/core-web-vitals",
-  rules: {
-    "no-unused-vars": ["error"],
+{
+  "extends": [
+    "next/core-web-vitals",
+    "next/typescript"
+  ],
+  "rules": {
     "eol-last": ["error", "always"],
     "no-multi-spaces": "error",
     "import/no-duplicates": ["error"],
     "array-bracket-spacing": ["error", "never"],
-    "comma-spacing": ["error", { before: false, after: true }],
+    "comma-spacing": ["error", { "before": false, "after": true }],
     "no-multiple-empty-lines": ["error", { "max": 1, "maxEOF": 0 }],
     "space-in-parens": ["error", "never"],
-    "no-trailing-spaces": "error"
+    "no-trailing-spaces": "error",
+    "@typescript-eslint/no-explicit-any": "off"
   }
-};
+}

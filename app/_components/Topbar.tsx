@@ -37,7 +37,7 @@ const AppBar = styled(MuiAppBar, {
 
 interface HeaderProps {
   isSidebarOpen: boolean;
-  toggleSidebar: Function;
+  toggleSidebar(): void;
 }
 
 export default function Header({ isSidebarOpen, toggleSidebar }: HeaderProps) {

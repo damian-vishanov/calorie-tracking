@@ -37,7 +37,7 @@ import {
 import { Spinner } from "../Spinner";
 
 type Props = {
-  isAdmin: Boolean;
+  isAdmin: boolean;
   foodToEdit?: IFoodItem;
 };
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -59,7 +59,7 @@ const Drawer = styled(MuiDrawer, {
 
 type Props = {
   isSidebarOpen: boolean;
-  toggleSidebar: Function;
+  toggleSidebar(): void;
 };
 
 export default function Sidebar({ isSidebarOpen, toggleSidebar }: Props) {

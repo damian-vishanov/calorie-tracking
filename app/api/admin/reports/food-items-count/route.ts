@@ -5,6 +5,6 @@ async function getFoodItemsCount() {
   return await foodsRepo.getFoodItemsCount();
 }
 
-export const GET = apiHandler(async (req) => {
+export const GET = apiHandler(async () => {
   return getFoodItemsCount();
 });

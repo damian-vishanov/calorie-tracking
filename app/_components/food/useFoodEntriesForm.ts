@@ -2,9 +2,8 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Dayjs } from "dayjs";
 
-import { useAlertService } from "@/app/_services";
 import { TFormData, IFoodEntriesForm } from "./commonTypes";
-import { IFoodService, IUserService } from "@/app/_services";
+import { useAlertService, IFoodService, IUserService } from "@/app/_services";
 
 type Props = {
   userService: IUserService;

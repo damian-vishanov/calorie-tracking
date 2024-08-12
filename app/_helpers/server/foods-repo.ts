@@ -1,10 +1,10 @@
 import { db } from "./db";
-const mongoose = require("mongoose");
+import * as mongoose from "mongoose";
 
 const Food = db.Food;
 
 async function getAll(params: any) {
-  let filter: any = {};
+  const filter: any = {};
 
   if (params.dateFrom && params.dateTo) {
     filter.takenAt = {

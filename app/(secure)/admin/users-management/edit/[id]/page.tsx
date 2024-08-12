@@ -12,12 +12,12 @@ function Edit({ params: { id } }: any) {
   const userService = useUserService();
   const user = userService.user;
 
-  if (!id) {
-    router.push("/");
-    return;
-  }
-
   useEffect(() => {
+    if (!id) {
+      router.push("/");
+      return;
+    }
+
     const loadData = async () => {
       await userService.getById(id);
     };

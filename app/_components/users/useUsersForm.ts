@@ -22,7 +22,7 @@ export function useUsersForm({ userService }: Props): IFoodEntriesForm {
     setIsLoading(false);
   };
 
-  const onSubmit = async (data: TFormData) => {
+  const onSubmit = async () => {
     alertService.clear();
 
     await loadData();
