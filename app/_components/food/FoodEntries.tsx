@@ -33,8 +33,7 @@ import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import { useFoodEntriesForm } from "./useFoodEntriesForm";
 import { useFoodService, useUserService } from "@/app/_services";
 import { Spinner } from "@/app/_components/Spinner";
-import DateRange from "./DateRange";
-import ReachedDays from "./ReachedDays";
+import { DateRange, ReachedDays } from "./";
 
 export function FoodEntries() {
   const foodService = useFoodService();

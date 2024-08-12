@@ -32,7 +32,7 @@ import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import { useFoodService, useUserService } from "@/app/_services";
 import { useFoodEntriesForm } from "./useFoodEntriesForm";
 import { Spinner } from "@/app/_components/Spinner";
-import { DateRange } from "@/app/_components/food/DateRange";
+import { DateRange } from "@/app/_components/food";
 
 export default function AdminFoodEntries() {
   const foodService = useFoodService();

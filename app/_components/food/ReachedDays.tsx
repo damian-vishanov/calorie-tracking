@@ -16,7 +16,7 @@ type Props = {
   foodEntriesForm: IFoodEntriesForm;
 };
 
-export default function ReachedDays({
+export function ReachedDays({
   foodService,
   userService,
   foodEntriesForm,

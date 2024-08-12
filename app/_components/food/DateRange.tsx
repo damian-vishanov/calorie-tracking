@@ -12,7 +12,7 @@ type Props = {
   foodEntriesForm: IFoodEntriesForm;
 };
 
-export default function DateRange({ foodEntriesForm }: Props) {
+export function DateRange({ foodEntriesForm }: Props) {
   const { formMethods, onSubmit, handleReset } = foodEntriesForm;
   const { control, handleSubmit } = formMethods;
 
