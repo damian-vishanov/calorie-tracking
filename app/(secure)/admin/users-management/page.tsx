@@ -1,10 +1,5 @@
-"use client";
+import UsersManagement from "@/app/_components/users/UsersManagement";
 
-import Link from "next/link";
-
-import { Grid, Paper, Button } from "@mui/material";
-import AddIcon from "@mui/icons-material/Add";
-
-export default function UsersManagement() {
-  return <>UsersManagement</>;
+export default function Users() {
+  return <UsersManagement />;
 }
