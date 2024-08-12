@@ -11,7 +11,7 @@ import LocalFireDepartmentIcon from "@mui/icons-material/LocalFireDepartment";
 
 import { useUserService } from "../_services/useUserService";
 
-const drawerWidth: number = 240;
+const drawerWidth: number = 260;
 
 interface AppBarProps extends MuiAppBarProps {
   open?: boolean;

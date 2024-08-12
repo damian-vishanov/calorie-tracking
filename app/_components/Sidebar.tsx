@@ -29,7 +29,7 @@ import ExpandMore from "@mui/icons-material/ExpandMore";
 
 import { useUserService } from "../_services";
 
-const drawerWidth: number = 240;
+const drawerWidth: number = 260;
 
 const Drawer = styled(MuiDrawer, {
   shouldForwardProp: (prop) => prop !== "open",
