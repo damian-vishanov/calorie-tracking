@@ -4,7 +4,6 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 import { AddEditFood } from "@/app/_components/food";
-import { Spinner } from "@/app/_components/Spinner";
 import { useFoodService } from "@/app/_services";
 
 export default Edit;

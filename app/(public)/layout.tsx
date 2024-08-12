@@ -1,9 +1,7 @@
 import { redirect } from "next/navigation";
-
+import { Container, CssBaseline } from "@mui/material";
 import { auth } from "../_helpers/server";
 import { Alert } from "../_components/Alert";
-
-import { Container, CssBaseline } from "@mui/material";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   if (auth.isAuthenticated()) {

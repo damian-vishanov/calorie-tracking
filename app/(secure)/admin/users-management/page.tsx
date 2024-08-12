@@ -1,8 +1,6 @@
 import Link from "next/link";
-
 import { Grid, Button } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
-
 import UsersManagement from "@/app/_components/users/UsersManagement";
 
 export default function Users() {

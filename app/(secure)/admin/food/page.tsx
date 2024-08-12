@@ -1,10 +1,8 @@
 "use client";
 
 import Link from "next/link";
-
-import { Grid, Paper, Button } from "@mui/material";
+import { Grid, Button } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
-
 import AdminFoodEntries from "@/app/_components/food/AdminFoodEntries";
 
 export default function Home() {
