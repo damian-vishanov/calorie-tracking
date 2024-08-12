@@ -1,4 +1,4 @@
-import { foodsRepo, usersRepo } from "@/app/_helpers/server";
+import { foodsRepo } from "@/app/_helpers/server";
 import { apiHandler } from "@/app/_helpers/server/api";
 
 async function getAverageCalories(
@@ -7,26 +7,6 @@ async function getAverageCalories(
   page?: number,
   pageSize?: number
 ) {
-  // const results = [];
-
-  // const users = await usersRepo.getAll();
-  // for (const user of users) {
-  //   const averageCalories = await foodsRepo.getUserAverageCalories({
-  //     userId: user._id,
-  //     dateFrom,
-  //     dateTo,
-  //     page,
-  //     pageSize,
-  //   });
-
-  //   results.push({
-  //     userId: user._id,
-  //     email: user.email,
-  //     averageCalories,
-  //   });
-  // }
-
-  // return results;
   const averageCalories = await foodsRepo.getUserAverageCalories({
     dateFrom,
     dateTo,
@@ -34,7 +14,6 @@ async function getAverageCalories(
     pageSize,
   });
   return averageCalories;
-  // console.log(averageCalories);
 }
 
 export const GET = apiHandler(async (req) => {
