@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 dotenv.config();
-import * as mongoose from "mongoose";
-import * as bcrypt from "bcryptjs";
+import mongoose from "mongoose";
+import bcrypt from "bcryptjs";
 
 const userSchema = new mongoose.Schema({
   email: String,
