@@ -7,7 +7,7 @@ async function getUserReachedLimitDays(userId: string, caloriesLimit: number) {
 
 export const GET = apiHandler(async (req) => {
   const url = new URL(req.url);
-  const userId = url.searchParams.get("userId");
+  const userId = req.headers.get("userId");
   const caloriesLimit = url.searchParams.get("caloriesLimit");
 
   return getUserReachedLimitDays(userId, parseInt(caloriesLimit));

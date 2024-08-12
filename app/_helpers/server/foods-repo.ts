@@ -41,6 +41,14 @@ async function getById(params: any) {
   }
 }
 
+async function getByIdAndUserId(id: string, userId: string) {
+  try {
+    return await Food.findOne({ _id: id, userId });
+  } catch {
+    throw "Food Not Found";
+  }
+}
+
 async function getByUserId(params: any) {
   let filter = {};
   if (params.dateFrom && params.dateTo) {
@@ -69,7 +77,7 @@ async function getByUserId(params: any) {
     .limit(pageSize);
 
   const totalCalorieData = await Food.aggregate([
-    { $match: filter },
+    { $match: { ...filter, cheating: false } },
     { $group: { _id: null, totalCalories: { $sum: "$calorieValue" } } },
   ]);
 
@@ -379,18 +387,29 @@ async function update(id: string, params: any) {
   await Food.findOneAndUpdate({ _id: id }, params);
 }
 
+async function updateByIdAndUserId(id: string, userId: string, params: any) {
+  await Food.findOneAndUpdate({ _id: id, userId }, params);
+}
+
 async function _delete(id: string) {
   await Food.findByIdAndDelete(id);
+}
+
+async function deleteByIdAndUserId(id: string, userId: string) {
+  await Food.findOneAndDelete({ _id: id, userId });
 }
 
 export const foodsRepo = {
   getAll,
   getById,
   getByUserId,
+  getByIdAndUserId,
   getUserAverageCalories,
   getFoodItemsCount,
   getUserReachedLimitDays,
   create,
   update,
+  updateByIdAndUserId,
   delete: _delete,
+  deleteByIdAndUserId,
 };

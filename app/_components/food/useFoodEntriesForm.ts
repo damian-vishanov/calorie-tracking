@@ -8,13 +8,11 @@ import { useAlertService, IFoodService, IUserService } from "@/app/_services";
 type Props = {
   userService: IUserService;
   foodService: IFoodService;
-  isAdminForm?: boolean;
 };
 
 export function useFoodEntriesForm({
   userService,
   foodService,
-  isAdminForm,
 }: Props): IFoodEntriesForm {
   const alertService = useAlertService();
   const formMethods = useForm<TFormData>();
@@ -25,22 +23,14 @@ export function useFoodEntriesForm({
 
   const loadData = async (dateFrom?: Dayjs, dayTo?: Dayjs) => {
     setIsLoading(true);
-    if (isAdminForm) {
-      await foodService.getAll(
-        dateFrom ? dateFrom.format("ddd, D MMM YYYY") : null,
-        dayTo ? dayTo.add(1, "day").format("ddd, D MMM YYYY") : null,
-        page + 1,
-        rowsPerPage
-      );
-    } else {
-      await foodService.getByUserId(
-        userService.currentUser.id,
-        dateFrom ? dateFrom.format("ddd, D MMM YYYY") : null,
-        dayTo ? dayTo.add(1, "day").format("ddd, D MMM YYYY") : null,
-        page + 1,
-        rowsPerPage
-      );
-    }
+
+    await foodService.getAll(
+      dateFrom ? dateFrom.format("ddd, D MMM YYYY") : null,
+      dayTo ? dayTo.add(1, "day").format("ddd, D MMM YYYY") : null,
+      page + 1,
+      rowsPerPage
+    );
+
     setIsLoading(false);
   };
 

@@ -52,7 +52,7 @@ export function AddEditUser({ userToEdit }: Props) {
       email: "",
       password: "",
       role: "",
-      caloriesLimit: "",
+      caloriesLimit: "2100",
     },
   });
 

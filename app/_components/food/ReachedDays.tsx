@@ -35,7 +35,6 @@ export function ReachedDays({
     if (userService.currentUser?.id) {
       const currentUser = userService.currentUser;
       foodService.getUserReachedLimitDays(
-        currentUser?.id,
         currentUser?.caloriesLimit
       );
     }

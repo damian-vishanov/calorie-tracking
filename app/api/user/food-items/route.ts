@@ -20,12 +20,12 @@ async function getByUserId(
 
 async function create(req: Request) {
   const body = await req.json();
-  await foodsRepo.create(body);
+  await foodsRepo.create({ ...body, userId: req.headers.get("userId") });
 }
 
 export const GET = apiHandler(async (req) => {
   const url = new URL(req.url);
-  const userId = url.searchParams.get("userId");
+  const userId = req.headers.get("userId");
   const dateFrom = url.searchParams.get("dateFrom");
   const dateTo = url.searchParams.get("dateTo");
   const page = url.searchParams.get("page");
@@ -46,6 +46,5 @@ export const POST = apiHandler(create, {
     name: joi.string().required(),
     calorieValue: joi.string().required(),
     cheating: joi.bool().required(),
-    userId: joi.string().required(),
   }),
 });

@@ -35,7 +35,7 @@ import { Spinner } from "@/app/_components/Spinner";
 import { DateRange } from "@/app/_components/food";
 
 export default function AdminFoodEntries() {
-  const foodService = useFoodService();
+  const foodService = useFoodService(true);
   const userService = useUserService();
   const [openDialog, setOpenDialog] = useState<boolean>(false);
   const [selectedFoodId, setSelectedFoodId] = useState<string | null>(null);
@@ -43,7 +43,6 @@ export default function AdminFoodEntries() {
   const foodEntriesForm = useFoodEntriesForm({
     userService,
     foodService,
-    isAdminForm: true,
   });
   const {
     isLoading,

@@ -3,65 +3,62 @@ import { useFetch } from "@/app/_helpers/client";
 import { IUser } from "../_store/slices/userSlice";
 import { useAlertService } from "./useAlertService";
 
-export function useFoodService(): IFoodService {
+export function useFoodService(isAdmin?: boolean): IFoodService {
   const alertService = useAlertService();
   const fetch = useFetch();
   const [foods, setFoods] = useState<IFoodItems | null>(null);
   const [food, setFood] = useState<IFoodItem | null>(null);
   const [daysReachedLimit, setDaysReachedLimit] = useState<Date[]>([]);
+  const apiGroup = isAdmin ? 'admin' : 'user';
 
   return {
     foods,
     food,
     daysReachedLimit,
-    getAll: async (dateFrom, dateTo, page, pageSize) => {
-      let path = `/api/admin/food-items${page && `?page=${page}`}${
-        pageSize && `&pageSize=${pageSize}`
-      }`;
-
-      if (dateFrom && dateTo) {
-        path = `/api/admin/food-items?&dateFrom=${dateFrom}&dateTo=${dateTo}${
-          page && `&page=${page}`
-        }${pageSize && `&pageSize=${pageSize}`}`;
-      }
-
-      const foods = await fetch.get(path);
-      setFoods(foods);
-    },
     getById: async (id) => {
       try {
-        const food = await fetch.get(`/api/admin/food-items/${id}`);
+        console.log(isAdmin)
+        const food = await fetch.get(`/api/${apiGroup}/food-items/${id}`);
         setFood(food);
       } catch (error: any) {
         alertService.error(error);
       }
     },
-    getByUserId: async (userId, dateFrom, dateTo, page, pageSize) => {
-      let path = `/api/foods?userId=${userId}${page && `&page=${page}`}${
-        pageSize && `&pageSize=${pageSize}`
-      }`;
+    getAll: async (dateFrom, dateTo, page, pageSize) => {
+      const params = new URLSearchParams();
+
+      if (page) {
+        params.append('page', page.toString());
+      }
+
+      if (pageSize) {
+        params.append('pageSize', pageSize.toString());
+      }
 
       if (dateFrom && dateTo) {
-        path += `&dateFrom=${dateFrom}&dateTo=${dateTo}`;
+        params.append('dateFrom', dateFrom);
+        params.append('dateTo', dateTo);
       }
+
+      const path = `/api/${apiGroup}/food-items${params.size > 0 ? `?${params}` : ''}`;
 
       const foods = await fetch.get(path);
       setFoods(foods);
     },
-    getUserReachedLimitDays: async (userId, caloriesLimit) => {
+    getUserReachedLimitDays: async (caloriesLimit) => {
       const days = await fetch.get(
-        `/api/foods/reached-limit-days?userId=${userId}&caloriesLimit=${caloriesLimit}`
+        `/api/user/food-items/reached-limit-days?caloriesLimit=${caloriesLimit}`
       );
       setDaysReachedLimit(days);
     },
     create: async (food) => {
-      await fetch.post("/api/foods", food);
+      await fetch.post(`/api/${apiGroup}/food-items/`, food);
     },
     update: async (id, params) => {
-      await fetch.put(`/api/admin/food-items/${id}`, params);
+      await fetch.put(`/api/${apiGroup}/food-items/${id}`, params);
     },
     delete: async (id) => {
-      await fetch.delete(`/api/admin/food-items/${id}`);
+      await fetch.delete(`/api/${apiGroup}/food-items/${id}`);
     },
   };
 }
@@ -101,15 +98,7 @@ export interface IFoodService extends IFoodStore, IDaysReachedLimitStore {
     pageSize?: number
   ) => Promise<void>;
   getById: (id: string) => Promise<void>;
-  getByUserId: (
-    userId: string,
-    dateFrom?: string,
-    dateTo?: string,
-    page?: number,
-    pageSize?: number
-  ) => Promise<void>;
   getUserReachedLimitDays: (
-    userId: string,
     caloriesLimit: number
   ) => Promise<void>;
   create: (user: IFoodItem) => Promise<void>;

@@ -10,7 +10,7 @@ export default Edit;
 
 function Edit({ params: { id } }: any) {
   const router = useRouter();
-  const foodService = useFoodService();
+  const foodService = useFoodService(true);
   const food = foodService.food;
 
   useEffect(() => {

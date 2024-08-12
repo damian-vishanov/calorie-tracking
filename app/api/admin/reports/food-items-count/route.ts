@@ -7,4 +7,4 @@ async function getFoodItemsCount() {
 
 export const GET = apiHandler(async () => {
   return getFoodItemsCount();
-});
+}, { admin: true });

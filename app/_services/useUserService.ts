@@ -60,7 +60,7 @@ export function useUserService(): IUserService {
     },
     getCurrent: async () => {
       if (!currentUser?.id) {
-        const currentUser = await fetch.get("/api/users/current");
+        const currentUser = await fetch.get("/api/user/current");
         dispatch(setCurrentUser(currentUser));
       }
     },

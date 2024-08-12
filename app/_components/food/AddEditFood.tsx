@@ -53,7 +53,7 @@ type FormData = {
 export function AddEditFood({ isAdmin, foodToEdit }: Props) {
   const router = useRouter();
   const alertService = useAlertService();
-  const foodService = useFoodService();
+  const foodService = useFoodService(isAdmin);
   const userService = useUserService();
   const [loading, setLoading] = useState(true);
   const users = userService.users;
@@ -79,6 +79,7 @@ export function AddEditFood({ isAdmin, foodToEdit }: Props) {
   });
 
   const selectedDate = watch("date");
+  const returnPath = isAdmin ? "/admin/food" : "/";
 
   useEffect(() => {
     async function loadData() {
@@ -141,19 +142,7 @@ export function AddEditFood({ isAdmin, foodToEdit }: Props) {
         await foodService.create(formattedData);
       }
 
-      if (foodToEdit) {
-        if (isAdmin) {
-          router.push("/admin/food");
-        } else {
-          router.push("/");
-        }
-      } else {
-        if (isAdmin) {
-          router.push("/admin/food");
-        } else {
-          router.push("/");
-        }
-      }
+      router.push(returnPath);
 
       if (foodToEdit) {
         alertService.success("Food edited", true);
@@ -323,7 +312,7 @@ export function AddEditFood({ isAdmin, foodToEdit }: Props) {
             <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 2 }}>
               <Button
                 component={Link}
-                href="/admin/food"
+                href={returnPath}
                 variant="text"
                 color="inherit"
               >

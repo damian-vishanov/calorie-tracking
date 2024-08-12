@@ -29,4 +29,4 @@ export const GET = apiHandler(async (req) => {
     parseInt(page),
     parseInt(pageSize)
   );
-});
+}, { admin: true });
