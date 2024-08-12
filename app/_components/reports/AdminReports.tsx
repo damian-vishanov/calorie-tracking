@@ -77,7 +77,15 @@ export default function AdminReports() {
               <YAxis
                 tickFormatter={(tick) => (Number.isInteger(tick) ? tick : "")}
               />
-              <Tooltip />
+              <Tooltip
+                labelStyle={{ color:'#666666' }}
+                formatter={(value, name, props) => {
+                  const labelKey = `${props.dataKey}Label`;
+                  return [
+                    `${value} ${value === 1 ? 'entry' : 'entries'}`,
+                    props.payload[labelKey]
+                  ];
+                }}/>
               <Legend />
               <Line
                 type="monotone"
