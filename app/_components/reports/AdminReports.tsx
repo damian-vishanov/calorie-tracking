@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import dayjs from "dayjs";
 import {
   LineChart,
   Line,
@@ -22,28 +23,11 @@ import {
   Typography,
   Grid,
   Paper,
-  Box,
 } from "@mui/material";
 
-import {
-  useUserService,
-  useFoodService,
-  useReportService,
-} from "@/app/_services";
-import dayjs from "dayjs";
-
-const data = [
-  { day: "Day 1", currentWeek: 5, previousWeek: 3 },
-  { day: "Day 2", currentWeek: 6, previousWeek: 5 },
-  { day: "Day 3", currentWeek: 8, previousWeek: 2 },
-  { day: "Day 4", currentWeek: 10, previousWeek: 8 },
-  { day: "Day 5", currentWeek: 7, previousWeek: 6 },
-  { day: "Day 6", currentWeek: 9, previousWeek: 7 },
-  { day: "Day 7", currentWeek: 4, previousWeek: 2 },
-];
+import { useReportService } from "@/app/_services";
 
 export default function AdminReports() {
-  // const userService = useUserService();
   const reportService = useReportService();
   const usersCalories = reportService.usersCalories;
 
@@ -69,7 +53,7 @@ export default function AdminReports() {
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0); // Reset to first page
+    setPage(0);
   };
 
   return (

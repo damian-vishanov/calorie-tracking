@@ -1,18 +1,21 @@
 "use client";
 
-import Link from "next/link";
 import { useState } from "react";
+import Link from "next/link";
+
 import { styled } from "@mui/material/styles";
 import MuiDrawer from "@mui/material/Drawer";
-import Toolbar from "@mui/material/Toolbar";
-import List from "@mui/material/List";
-import Divider from "@mui/material/Divider";
-import IconButton from "@mui/material/IconButton";
+import {
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  Toolbar,
+  List,
+  IconButton,
+  Collapse,
+} from "@mui/material";
+
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import ExpandLess from "@mui/icons-material/ExpandLess";
-import ExpandMore from "@mui/icons-material/ExpandMore";
-import Collapse from "@mui/material/Collapse";
-import { ListItemButton, ListItemIcon, ListItemText } from "@mui/material";
 import FastfoodIcon from "@mui/icons-material/Fastfood";
 import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
 import AddIcon from "@mui/icons-material/Add";
@@ -20,6 +23,8 @@ import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
 import ManageSearchIcon from "@mui/icons-material/ManageSearch";
 import BarChartIcon from "@mui/icons-material/BarChart";
 import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
+import ExpandLess from "@mui/icons-material/ExpandLess";
+import ExpandMore from "@mui/icons-material/ExpandMore";
 
 import { useUserService } from "../_services";
 

@@ -3,16 +3,16 @@
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 
-import { useAlertService } from "../_services";
-
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert, { AlertProps } from "@mui/material/Alert";
+
+import { useAlertService } from "../_services";
 
 export function Alert() {
   const pathname = usePathname();
   const alertService = useAlertService();
-  const alert = alertService.alert;
   const [open, setOpen] = useState<boolean>(false);
+  const alert = alertService.alert;
 
   const severity: AlertProps["severity"] =
     alert?.type === "success" ? "success" : "error";

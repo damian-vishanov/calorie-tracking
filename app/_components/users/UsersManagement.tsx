@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import React, { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Table,
   TableBody,
@@ -19,25 +19,23 @@ import {
   Button,
   Box,
   TablePagination,
+  IconButton,
+  Tooltip,
 } from "@mui/material";
-
-import { useUserService } from "@/app/_services";
-import { Spinner } from "@/app/_components/Spinner";
-import dayjs from "dayjs";
-import { IconButton, Tooltip } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
-import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
+
+import { useUserService } from "@/app/_services";
 import { useUsersForm } from "./useUsersForm";
+import { Spinner } from "@/app/_components/Spinner";
 
 export default function Users() {
   const userService = useUserService();
-  const [openDialog, setOpenDialog] = useState<boolean>(false);
-  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const usersForm = useUsersForm({
     userService,
   });
+  const [openDialog, setOpenDialog] = useState<boolean>(false);
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
 
   const {
     isLoading,
@@ -62,7 +60,7 @@ export default function Users() {
   const handleConfirmDelete = async () => {
     if (selectedUserId) {
       await userService.delete(selectedUserId);
-      loadData(); // Refresh the table after deletion
+      loadData();
     }
     setOpenDialog(false);
   };
@@ -75,7 +73,7 @@ export default function Users() {
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0); // Reset to first page
+    setPage(0);
   };
 
   return (
@@ -92,7 +90,6 @@ export default function Users() {
           <Typography component="h2" variant="h6" color="primary" gutterBottom>
             Users
           </Typography>
-
           {users?.totalItems > 0 && (
             <>
               <Table size="small">

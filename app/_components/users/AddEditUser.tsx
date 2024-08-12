@@ -1,15 +1,9 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useForm, Controller } from "react-hook-form";
-import {
-  IFoodItem,
-  useAlertService,
-  useFoodService,
-  useUserService,
-} from "@/app/_services";
-import dayjs, { Dayjs } from "dayjs";
 
 import {
   Grid,
@@ -19,24 +13,15 @@ import {
   TextField,
   Typography,
   CircularProgress,
-  Switch,
-  FormControlLabel,
   FormControl,
   InputLabel,
   Select,
   MenuItem,
 } from "@mui/material";
-import {
-  DatePicker,
-  TimePicker,
-  LocalizationProvider,
-} from "@mui/x-date-pickers";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { useEffect, useState } from "react";
 
-import { Spinner } from "../Spinner";
 import { IUser } from "@/app/_store/slices/userSlice";
-import { Rowdies } from "next/font/google";
+import { useAlertService, useUserService } from "@/app/_services";
+import { Spinner } from "@/app/_components/Spinner";
 
 type Props = {
   userToEdit?: IUser;

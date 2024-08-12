@@ -1,9 +1,8 @@
-import { useAlertService } from "@/app/_services";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { Dayjs } from "dayjs";
+
+import { useAlertService, IUserService } from "@/app/_services";
 import { TFormData, IFoodEntriesForm } from "./commonTypes";
-import { IUserService } from "@/app/_services";
 
 type Props = {
   userService: IUserService;
@@ -11,11 +10,11 @@ type Props = {
 
 export function useUsersForm({ userService }: Props): IFoodEntriesForm {
   const alertService = useAlertService();
-  const [isLoading, setIsLoading] = useState<boolean>(true);
   const formMethods = useForm<TFormData>();
-  const { setValue } = formMethods;
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [page, setPage] = useState<number>(0);
   const [rowsPerPage, setRowsPerPage] = useState<number>(10);
+  const { setValue } = formMethods;
 
   const loadData = async () => {
     setIsLoading(true);

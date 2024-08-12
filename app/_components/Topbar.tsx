@@ -1,12 +1,14 @@
 "use client";
 
+import { useEffect, useState } from "react";
+
 import { styled } from "@mui/material/styles";
-import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
 import { IconButton, Typography, Toolbar, Box } from "@mui/material";
+import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
 import MenuIcon from "@mui/icons-material/Menu";
 import LogoutIcon from "@mui/icons-material/Logout";
+
 import { useUserService } from "../_services/useUserService";
-import { useEffect, useState } from "react";
 
 const drawerWidth: number = 240;
 
