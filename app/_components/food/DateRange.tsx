@@ -1,18 +1,20 @@
 "use client";
 
-import { Controller, UseFormReturn } from "react-hook-form";
+import { Controller } from "react-hook-form";
+
 import { Button, Grid, Paper, Typography } from "@mui/material";
 import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { TFormData, IFoodEntriesForm } from "./commonTypes";
+
+import { IFoodEntriesForm } from "./commonTypes";
 
 type Props = {
   foodEntriesForm: IFoodEntriesForm;
 };
 
-export function DateRange({ foodEntriesForm }: Props) {
-  const { formMethods, loadData, onSubmit, handleReset } = foodEntriesForm;
-  const { control, handleSubmit, setValue } = formMethods;
+export default function DateRange({ foodEntriesForm }: Props) {
+  const { formMethods, onSubmit, handleReset } = foodEntriesForm;
+  const { control, handleSubmit } = formMethods;
 
   return (
     <Grid item xs={12}>

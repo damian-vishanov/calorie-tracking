@@ -1,7 +1,10 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
-import React, { useEffect, useState } from "react";
+
+import dayjs from "dayjs";
+
 import {
   Table,
   TableBody,
@@ -26,19 +29,17 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
-import dayjs from "dayjs";
+
 import { useFoodEntriesForm } from "./useFoodEntriesForm";
 import { useFoodService, useUserService } from "@/app/_services";
 import { Spinner } from "@/app/_components/Spinner";
-import { DateRange } from "@/app/_components/food/DateRange";
-import ReachedDays from "@/app/_components/food/ReachedDays";
+import DateRange from "./DateRange";
+import ReachedDays from "./ReachedDays";
 
 export function FoodEntries() {
   const foodService = useFoodService();
   const userService = useUserService();
   const foodEntriesForm = useFoodEntriesForm({ userService, foodService });
-  const [openDialog, setOpenDialog] = useState<boolean>(false);
-  const [selectedFoodId, setSelectedFoodId] = useState<string | null>(null);
   const {
     isLoading,
     loadData,
@@ -48,6 +49,8 @@ export function FoodEntries() {
     page,
     rowsPerPage,
   } = foodEntriesForm;
+  const [openDialog, setOpenDialog] = useState<boolean>(false);
+  const [selectedFoodId, setSelectedFoodId] = useState<string | null>(null);
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
@@ -73,7 +76,7 @@ export function FoodEntries() {
   const handleConfirmDelete = async () => {
     if (selectedFoodId) {
       await foodService.delete(selectedFoodId);
-      loadData(); // Refresh the table after deletion
+      loadData();
     }
     setOpenDialog(false);
   };
@@ -86,10 +89,16 @@ export function FoodEntries() {
             p: 2,
             display: "flex",
             flexDirection: "column",
-            height: 720,
+            height: 760,
           }}
         >
-          <Typography component="h2" variant="h6" color="primary" gutterBottom>
+          <Typography
+            component="h2"
+            variant="h6"
+            color="primary"
+            gutterBottom
+            mb={3}
+          >
             Food items
           </Typography>
 

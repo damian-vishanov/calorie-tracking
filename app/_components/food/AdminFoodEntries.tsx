@@ -1,7 +1,9 @@
 "use client";
 
-import Link from "next/link";
 import React, { useState } from "react";
+import Link from "next/link";
+import dayjs from "dayjs";
+
 import {
   Table,
   TableBody,
@@ -19,22 +21,18 @@ import {
   Button,
   Box,
   TablePagination,
+  IconButton,
+  Tooltip,
 } from "@mui/material";
-
-import {
-  useFoodService,
-  useUserService,
-  useAlertService,
-} from "@/app/_services";
-import { Spinner } from "@/app/_components/Spinner";
-import dayjs from "dayjs";
-import { IconButton, Tooltip } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
-import { DateRange } from "@/app/_components/food/DateRange";
+
+import { useFoodService, useUserService } from "@/app/_services";
 import { useFoodEntriesForm } from "./useFoodEntriesForm";
+import { Spinner } from "@/app/_components/Spinner";
+import { DateRange } from "@/app/_components/food/DateRange";
 
 export default function AdminFoodEntries() {
   const foodService = useFoodService();
@@ -70,7 +68,7 @@ export default function AdminFoodEntries() {
   const handleConfirmDelete = async () => {
     if (selectedFoodId) {
       await foodService.delete(selectedFoodId);
-      loadData(); // Refresh the table after deletion
+      loadData();
     }
     setOpenDialog(false);
   };
@@ -83,7 +81,7 @@ export default function AdminFoodEntries() {
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0); // Reset to first page
+    setPage(0);
   };
 
   return (
@@ -94,13 +92,12 @@ export default function AdminFoodEntries() {
             p: 2,
             display: "flex",
             flexDirection: "column",
-            height: 720,
+            height: 760,
           }}
         >
           <Typography component="h2" variant="h6" color="primary" gutterBottom>
             Food items
           </Typography>
-
           {foodItems?.totalItems > 0 && (
             <>
               <Table size="small">
@@ -175,7 +172,6 @@ export default function AdminFoodEntries() {
           )}
         </Paper>
       </Grid>
-
       <Grid item xs={12} md={6} lg={4}>
         <Grid container spacing={3}>
           <DateRange foodEntriesForm={foodEntriesForm} />

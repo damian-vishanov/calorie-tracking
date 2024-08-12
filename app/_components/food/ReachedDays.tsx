@@ -1,7 +1,9 @@
-import { useEffect, useState } from "react";
+"use client";
+
+import { useEffect } from "react";
 import dayjs, { Dayjs } from "dayjs";
 
-import { Grid, Typography, Box, Paper } from "@mui/material";
+import { Grid, Typography, Paper } from "@mui/material";
 import { LocalizationProvider, DateCalendar } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
@@ -14,7 +16,11 @@ type Props = {
   foodEntriesForm: IFoodEntriesForm;
 };
 
-export default function ReachedDays({ foodService, userService, foodEntriesForm }: Props) {
+export default function ReachedDays({
+  foodService,
+  userService,
+  foodEntriesForm,
+}: Props) {
   const { formMethods, onSubmit } = foodEntriesForm;
   const { setValue, handleSubmit } = formMethods;
   const isDayHighlighted = (day: Dayjs) => {
@@ -38,7 +44,7 @@ export default function ReachedDays({ foodService, userService, foodEntriesForm 
   return (
     <Grid item xs={12}>
       <Paper
-        sx={{ display: "flex", flexDirection: "column", p: 2, height: 400 }}
+        sx={{ display: "flex", flexDirection: "column", p: 2, height: 380 }}
       >
         <Typography component="h2" variant="h6" color="primary" gutterBottom>
           Days reached the limit
