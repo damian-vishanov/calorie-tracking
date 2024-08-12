@@ -76,8 +76,6 @@ export default function Sidebar({ isSidebarOpen, toggleSidebar }: Props) {
     }
   };
 
-  useEffect(() => console.log(pathname));
-
   return (
     <Drawer variant="permanent" open={isSidebarOpen}>
       <Toolbar
