@@ -198,7 +198,7 @@ export function AddEditUser({ userToEdit }: Props) {
                       id="role-select"
                       label="Role"
                       {...field}
-                      disabled={userToEdit?.role === "Admin"}
+                      disabled={userToEdit?.id === userService.currentUser?.id}
                       onChange={(event) => field.onChange(event.target.value)}
                     >
                       <MenuItem value="Admin">Admin</MenuItem>
