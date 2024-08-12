@@ -41,7 +41,7 @@ export function DateRange({ foodEntriesForm }: Props) {
               <DatePicker
                 label="From"
                 format="DD/MM/YYYY"
-                value={field.value}
+                value={field.value || null}
                 disableFuture
                 onChange={field.onChange}
                 sx={{ mb: 2 }}
@@ -55,7 +55,7 @@ export function DateRange({ foodEntriesForm }: Props) {
               <DatePicker
                 label="To"
                 format="DD/MM/YYYY"
-                value={field.value}
+                value={field.value || null}
                 disableFuture
                 onChange={field.onChange}
                 sx={{ mb: 4 }}

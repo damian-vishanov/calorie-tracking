@@ -59,7 +59,7 @@ export default function ReachedDays({ foodService, userService, foodEntriesForm 
                 const isSelected = isDayHighlighted(day.day);
                 return {
                   sx: {
-                    bgcolor: isSelected ? "secondary.main" : "transparent",
+                    bgcolor: isSelected ? "warning.main" : "transparent",
                     color: isSelected ? "white" : "inherit",
                     borderRadius: "50%",
                     width: 40,
@@ -78,7 +78,7 @@ export default function ReachedDays({ foodService, userService, foodEntriesForm 
                   children: (
                     <Typography
                       sx={{
-                        bgcolor: isSelected ? "secondary.main" : "transparent",
+                        bgcolor: isSelected ? "warning.main" : "transparent",
                         color: isSelected ? "white" : "inherit",
                         borderRadius: "50%",
                         width: "100%",
