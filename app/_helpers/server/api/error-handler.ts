@@ -1,27 +1,27 @@
-import { NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
+import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
 
 export { errorHandler };
 
 function errorHandler(err: Error | string) {
-    if (typeof (err) === 'string') {
-        // custom application error
-        const is404 = err.toLowerCase().endsWith('not found');
-        const status = is404 ? 404 : 400;
-        return NextResponse.json({ message: err }, { status });
-    }
+  if (typeof err === "string") {
+    const is404 = err.toLowerCase().endsWith("not found");
+    const status = is404 ? 404 : 400;
+    return NextResponse.json({ message: err }, { status });
+  }
 
-    if (err.name === 'JsonWebTokenError') {
-        // jwt error - delete cookie to auto logout
-        cookies().delete('authorization');
-        return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
-    }
+  if (err.name === "JsonWebTokenError") {
+    cookies().delete("authorization");
+    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+  }
 
-    if (err.message === 'InsufficientPrivilegesError') {
-        return NextResponse.json({ message: 'Insufficient privileges to complete the operation' }, { status: 403 });
-    }
+  if (err.message === "InsufficientPrivilegesError") {
+    return NextResponse.json(
+      { message: "Insufficient privileges to complete the operation" },
+      { status: 403 }
+    );
+  }
 
-    // default to 500 server error
-    console.error(err);
-    return NextResponse.json({ message: err.message }, { status: 500 });
+  console.error(err);
+  return NextResponse.json({ message: err.message }, { status: 500 });
 }

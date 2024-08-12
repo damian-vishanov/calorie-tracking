@@ -1,10 +1,11 @@
+import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
+
 import { useAlertService } from "./useAlertService";
 import { useFetch } from "../_helpers/client";
 import { selectCurrentUser } from "../_store/selectors";
 import { IUser, setCurrentUser } from "../_store/slices/userSlice";
-import { useState } from "react";
 
 export function useUserService(): IUserService {
   const alertService = useAlertService();
@@ -72,41 +73,8 @@ export function useUserService(): IUserService {
     delete: async (id) => {
       await fetch.delete(`/api/admin/users/${id}`);
     },
-    // create: async (user) => {
-    //     await fetch.post('/api/users', user);
-    // },
-    // update: async (id, params) => {
-    //     await fetch.put(`/api/users/${id}`, params);
-
-    //     // update current user if the user updated their own record
-    //     if (id === currentUser?.id) {
-    //         userStore.setState({ currentUser: { ...currentUser, ...params } })
-    //     }
-    // },
-    // delete: async (id) => {
-    //     // set isDeleting prop to true on user
-    //     userStore.setState({
-    //         users: users!.map(x => {
-    //             if (x.id === id) { x.isDeleting = true; }
-    //             return x;
-    //         })
-    //     });
-
-    //     // delete user
-    //     const response = await fetch.delete(`/api/users/${id}`);
-
-    //     // remove deleted user from state
-    //     userStore.setState({ users: users!.filter(x => x.id !== id) });
-
-    //     // logout if the user deleted their own record
-    //     if (response.deletedSelf) {
-    //         router.push('/account/login');
-    //     }
-    // }
   };
 }
-
-// interfaces
 
 interface IUserStore {
   users?: IUser[];

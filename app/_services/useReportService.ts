@@ -1,9 +1,7 @@
 import { useState } from "react";
 import { useFetch } from "@/app/_helpers/client";
-import { useAlertService } from "./useAlertService";
 
 export function useReportService(): IReportService {
-  const alertService = useAlertService();
   const fetch = useFetch();
   const [usersCalories, setUsersCalories] = useState<IUsersItems>(null);
   const [foodItemsCount, setFoodItemsCount] = useState<IFoodItemCount[]>([]);
@@ -17,13 +15,14 @@ export function useReportService(): IReportService {
           page,
         ]}&pageSize=${pageSize}`
       );
-      console.log("getUsersCalories: ", getUsersCalories);
+
       setUsersCalories(getUsersCalories);
     },
     getFoodItemsCount: async () => {
       const getFoodItemsCount = await fetch.get(
         `/api/admin/reports/food-items-count`
       );
+
       setFoodItemsCount(getFoodItemsCount);
     },
   };

@@ -7,9 +7,9 @@ export async function validateMiddleware(
   if (!schema) return;
 
   const options = {
-    abortEarly: false, // include all errors
-    allowUnknown: true, // ignore unknown props
-    stripUnknown: true, // remove unknown props
+    abortEarly: false,
+    allowUnknown: true,
+    stripUnknown: true,
   };
 
   const body = await req.json();
@@ -19,6 +19,5 @@ export async function validateMiddleware(
     throw `Validation error: ${error.details.map((x) => x.message).join(", ")}`;
   }
 
-  // update req.json() to return sanitized req body
   req.json = () => value;
 }

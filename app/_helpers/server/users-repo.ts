@@ -31,13 +31,9 @@ async function getAllPaged(params: any) {
   const page = params.page ? parseInt(params.page, 10) : 1;
   const pageSize = params.pageSize ? parseInt(params.pageSize, 10) : 10;
 
-  // Calculate the number of documents to skip
   const skip = (page - 1) * pageSize;
-
-  // Fetch the total count of documents matching the filter
   const totalItems = await User.countDocuments();
 
-  // Fetch the documents with pagination
   const items = await User.find().sort({ role: 1 }).skip(skip).limit(pageSize);
 
   return {
