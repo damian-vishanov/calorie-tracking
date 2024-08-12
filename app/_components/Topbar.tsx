@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 
 import { styled } from "@mui/material/styles";
-import { IconButton, Typography, Toolbar, Box } from "@mui/material";
+import { IconButton, Typography, Toolbar, Box, Tooltip } from "@mui/material";
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
 import MenuIcon from "@mui/icons-material/Menu";
 import LogoutIcon from "@mui/icons-material/Logout";
@@ -89,14 +89,16 @@ export default function Header({ isSidebarOpen, toggleSidebar }: HeaderProps) {
         </Box>
         <Box sx={{ display: "flex", alignItems: "center" }}>
           {userService.currentUser?.email}
-          <IconButton
-            disabled={loggingOut}
-            color="inherit"
-            onClick={logout}
-            sx={{ ml: 3 }}
-          >
-            <LogoutIcon />
-          </IconButton>
+          <Tooltip title="Log out">
+            <IconButton
+              disabled={loggingOut}
+              color="inherit"
+              onClick={logout}
+              sx={{ ml: 3 }}
+            >
+              <LogoutIcon />
+            </IconButton>
+          </Tooltip>
         </Box>
       </Toolbar>
     </AppBar>
