@@ -30,7 +30,7 @@ export function useReportService(): IReportService {
 }
 
 interface IUserItem {
-  id: string;
+  _id: string;
   email: string;
   averageCalories: number;
 }
