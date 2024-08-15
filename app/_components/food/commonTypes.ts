@@ -9,6 +9,7 @@ export type TFormData = {
 
 export interface IFoodEntriesForm {
   loadData: (dateFrom?: Dayjs, dayTo?: Dayjs) => Promise<void>;
+  reloadData: () => Promise<void>;
   onSubmit: (data: TFormData) => Promise<void>;
   handleReset: () => Promise<void>;
   isLoading: boolean;

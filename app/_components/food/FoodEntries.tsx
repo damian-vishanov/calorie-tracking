@@ -41,7 +41,7 @@ export function FoodEntries() {
   const foodEntriesForm = useFoodEntriesForm({ userService, foodService });
   const {
     isLoading,
-    loadData,
+    reloadData,
     foodItems,
     setPage,
     setRowsPerPage,
@@ -75,7 +75,10 @@ export function FoodEntries() {
   const handleConfirmDelete = async () => {
     if (selectedFoodId) {
       await foodService.delete(selectedFoodId);
-      loadData();
+      foodService.getUserReachedLimitDays(
+        userService.currentUser?.caloriesLimit
+      );
+      reloadData();
     }
     setOpenDialog(false);
   };

@@ -46,7 +46,7 @@ export default function AdminFoodEntries() {
   });
   const {
     isLoading,
-    loadData,
+    reloadData,
     foodItems,
     setPage,
     setRowsPerPage,
@@ -67,7 +67,7 @@ export default function AdminFoodEntries() {
   const handleConfirmDelete = async () => {
     if (selectedFoodId) {
       await foodService.delete(selectedFoodId);
-      loadData();
+      reloadData();
     }
     setOpenDialog(false);
   };

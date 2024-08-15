@@ -15,11 +15,18 @@ export function useFoodEntriesForm({
   foodService,
 }: Props): IFoodEntriesForm {
   const alertService = useAlertService();
-  const formMethods = useForm<TFormData>();
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const formMethods = useForm<TFormData>({
+    defaultValues: {
+      dateFrom: null,
+      dateTo: null,
+    },
+  });
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [page, setPage] = useState<number>(0);
   const [rowsPerPage, setRowsPerPage] = useState<number>(10);
   const { setValue } = formMethods;
+  const [dateFrom, setDateFrom] = useState<Dayjs>(null);
+  const [dateTo, setDateTo] = useState<Dayjs>(null);
 
   const loadData = async (dateFrom?: Dayjs, dayTo?: Dayjs) => {
     setIsLoading(true);
@@ -34,6 +41,10 @@ export function useFoodEntriesForm({
     setIsLoading(false);
   };
 
+  const reloadData = async () => {
+    loadData(dateFrom, dateTo);
+  }
+
   const onSubmit = async (data: TFormData) => {
     alertService.clear();
     if (!data.dateFrom || !data.dateTo) {
@@ -46,25 +57,30 @@ export function useFoodEntriesForm({
       return;
     }
 
-    await loadData(data.dateFrom, data.dateTo);
+    setDateFrom(data.dateFrom);
+    setDateTo(data.dateTo);
+    setPage(0);
   };
 
   const handleReset = async () => {
-    await loadData();
     setValue("dateFrom", null);
     setValue("dateTo", null);
+    setDateFrom(null);
+    setDateTo(null);
+    setPage(0);
   };
 
   useEffect(() => {
     if (userService.currentUser?.id) {
-      loadData();
+      reloadData();
     }
-  }, [userService.currentUser, page, rowsPerPage]);
+  }, [userService.currentUser, page, rowsPerPage, dateFrom, dateTo]);
 
   const foodItems = foodService.foods;
 
   return {
     loadData,
+    reloadData,
     onSubmit,
     handleReset,
     isLoading,
